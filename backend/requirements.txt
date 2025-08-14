@@ -1,0 +1,35 @@
+# FastAPI and server
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# Data processing - kompatibel dengan Python 3.11
+numpy==1.26.4
+pandas==2.1.4
+openpyxl==3.1.2
+PyPDF2==3.0.1
+python-docx==1.1.0
+
+# LangChain ecosystem - versi yang kompatibel
+langchain==0.1.0
+langchain-openai==0.0.5
+langchain-community==0.0.12
+langchain-core==0.1.0
+
+# OpenAI
+openai>=1.6.1,<2.0.0
+
+# Vector database
+chromadb==0.4.22
+
+# Embeddings
+sentence-transformers==2.2.2
+
+# Utilities
+python-dotenv==1.0.0
+pydantic==2.5.0
+aiofiles==23.2.1
+
+# Additional dependencies for LangChain
+tiktoken>=0.5.0
+SQLAlchemy>=2.0.0
