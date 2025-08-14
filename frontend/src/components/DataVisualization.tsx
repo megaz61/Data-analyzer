@@ -54,6 +54,19 @@ interface DataVisualizationProps {
 const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
   const { analysis_summary, file_detection } = fileData || {};
 
+  // For Excel files, get analysis from the first sheet if analysis_summary doesn't have detailed info
+  const getAnalysisData = () => {
+    if (fileData?.type === 'excel' && fileData.data) {
+      const firstSheetName = Object.keys(fileData.data)[0];
+      if (firstSheetName && fileData.data[firstSheetName]?.analysis) {
+        return fileData.data[firstSheetName].analysis;
+      }
+    }
+    return analysis_summary;
+  };
+
+  const analysisData = getAnalysisData();
+
   const getQualityColor = (score: number) => {
     if (score >= 80) return 'text-green-600 bg-green-50 border-green-200';
     if (score >= 60) return 'text-yellow-600 bg-yellow-50 border-yellow-200';
@@ -141,7 +154,7 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
 
   // === Column types ===
   const renderColumnTypes = () => {
-    const columnTypes = analysis_summary?.column_types;
+    const columnTypes = analysisData?.column_types;
     if (!columnTypes) return null;
 
     const typeColors: Record<string, string> = {
@@ -194,7 +207,7 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
 
   // === Data quality ===
   const renderDataQuality = () => {
-    const quality = analysis_summary?.data_quality;
+    const quality = analysisData?.data_quality;
     if (!quality) return null;
 
     const score = quality.data_quality_score || 0;
@@ -242,9 +255,35 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
     );
   };
 
-  // === PDF statistics ===
+  // === PDF statistics - FIXED VERSION ===
   const renderPDFStats = () => {
-    if (!analysis_summary || fileData?.type !== 'pdf') return null;
+    // Debug logs untuk troubleshooting
+    console.log('=== PDF STATS DEBUG ===');
+    console.log('fileData.type:', fileData?.type);
+    console.log('file_detection.type:', file_detection?.type);
+    console.log('analysis_summary exists:', !!analysis_summary);
+
+    // Return null jika tidak ada analysis_summary
+    if (!analysis_summary) {
+      console.log('No analysis_summary, returning null');
+      return null;
+    }
+
+    // Cek apakah file adalah PDF menggunakan beberapa metode
+    const isPDF = (
+      file_detection?.type === 'pdf' ||
+      (fileData?.type || '').toLowerCase().trim() === 'pdf' ||
+      (fileData?.filename && fileData.filename.toLowerCase().endsWith('.pdf'))
+    );
+
+    console.log('isPDF:', isPDF);
+
+    if (!isPDF) {
+      console.log('Not a PDF file, returning null');
+      return null;
+    }
+
+    console.log('Rendering PDF stats component');
 
     return (
       <div className="space-y-4">
@@ -253,45 +292,42 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
             <FileText className="w-5 h-5" />
             <span>Document Statistics</span>
           </h4>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-            <div>
-              <div className="text-red-600">Pages:</div>
-              <div className="font-medium text-red-900">{analysis_summary.pages}</div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 text-sm">
+            <div className="flex flex-col">
+              <span className="text-red-600">Pages:</span> 
+              <span className="font-medium text-red-900">
+                {analysis_summary.page_count || file_detection?.page_count || 'N/A'}
+              </span>
             </div>
-            <div>
-              <div className="text-red-600">Words:</div>
-              <div className="font-medium text-red-900">
-                {analysis_summary.word_count?.toLocaleString()}
-              </div>
+            <div className="flex flex-col">
+              <span className="text-red-600">Words:</span> 
+              <span className="font-medium text-red-900">
+                {analysis_summary.word_count || 'N/A'}
+              </span>
             </div>
-            <div>
-              <div className="text-red-600">Characters:</div>
-              <div className="font-medium text-red-900">
-                {analysis_summary.char_count?.toLocaleString()}
-              </div>
+            <div className="flex flex-col">
+              <span className="text-red-600">Characters:</span> 
+              <span className="font-medium text-red-900">
+                {analysis_summary.char_count || 'N/A'}
+              </span>
             </div>
-            <div>
-              <div className="text-red-600">Paragraphs:</div>
-              <div className="font-medium text-red-900">{analysis_summary.paragraph_count}</div>
+            <div className="flex flex-col">
+              <span className="text-red-600">Sentences:</span> 
+              <span className="font-medium text-red-900">
+                {analysis_summary.sentence_count || 'N/A'}
+              </span>
             </div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4 text-sm">
-            <div>
-              <div className="text-red-600">Sentences:</div>
-              <div className="font-medium text-red-900">{analysis_summary.sentence_count}</div>
+            <div className="flex flex-col">
+              <span className="text-red-600">Reading Time:</span> 
+              <span className="font-medium text-red-900">
+                {analysis_summary.reading_time_minutes ? `${analysis_summary.reading_time_minutes} min` : 'N/A'}
+              </span>
             </div>
-            <div>
-              <div className="text-red-600">Reading Time:</div>
-              <div className="font-medium text-red-900 flex items-center space-x-1">
-                <Clock className="w-4 h-4" />
-                <span>{analysis_summary.reading_time_minutes} min</span>
-              </div>
-            </div>
-            <div>
-              <div className="text-red-600">Avg Words/Page:</div>
-              <div className="font-medium text-red-900">
-                {analysis_summary.average_words_per_page}
-              </div>
+            <div className="flex flex-col">
+              <span className="text-red-600">Avg Words/Page:</span> 
+              <span className="font-medium text-red-900">
+                {analysis_summary.average_words_per_page || 'N/A'}
+              </span>
             </div>
           </div>
         </div>
@@ -313,14 +349,14 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
               <div>
                 <div className="text-gray-600">Success Rate:</div>
                 <div className="font-medium text-gray-900">
-                  {analysis_summary.extraction_info.extraction_success_rate.toFixed(1)}%
+                  {analysis_summary.extraction_info.extraction_success_rate?.toFixed(1) || 'N/A'}%
                 </div>
               </div>
               <div>
                 <div className="text-gray-600">Pages with Text:</div>
                 <div className="font-medium text-gray-900">
-                  {analysis_summary.extraction_info.pages_with_text} /{' '}
-                  {analysis_summary.extraction_info.total_pages_processed}
+                  {analysis_summary.extraction_info.pages_with_text || 'N/A'} /{' '}
+                  {analysis_summary.extraction_info.total_pages_processed || 'N/A'}
                 </div>
               </div>
             </div>
@@ -332,7 +368,7 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
 
   // === Intelligent charts (sesuai backend) ===
   const renderIntelligentCharts = () => {
-    const intelligentCharts = analysis_summary?.intelligent_charts;
+    const intelligentCharts = analysisData?.intelligent_charts;
     if (!intelligentCharts || Object.keys(intelligentCharts).length === 0) return null;
 
     const entries = Object.entries(intelligentCharts) as [string, any][];
@@ -342,7 +378,7 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
         case 'line': return <TrendingUp className="w-4 h-4 text-blue-600" />;
         case 'horizontal_bar': return <BarChart2 className="w-4 h-4 text-green-600" />;
         case 'histogram': return <BarChartIcon className="w-4 h-4 text-purple-600" />;
-        case 'scatter': return <Scatter3D className="w-4 h-4 text-orange-600" />;
+        case 'scatter': return <Activity className="w-4 h-4 text-orange-600" />;
         case 'pie': return <PieChartIcon className="w-4 h-4 text-pink-600" />;
         case 'area': return <Activity className="w-4 h-4 text-indigo-600" />;
         default: return <BarChartIcon className="w-4 h-4 text-gray-600" />;
@@ -559,7 +595,7 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
 
   // === Legacy charts (analysis_summary.charts) ===
   const renderLegacyCharts = () => {
-    const charts = analysis_summary?.charts;
+    const charts = analysisData?.charts;
     if (!charts || Object.keys(charts).length === 0) return null;
 
     return Object.entries(charts).map(([colName, cfg]: [string, any], idx) => {
@@ -642,10 +678,13 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
 
   // === Excel note (opsional ringkas) ===
   const renderExcelHeader = () => {
-    if (fileData?.type !== 'excel' || !analysis_summary) return null;
-    const totalSheets = analysis_summary.total_sheets;
-    const totalRows = analysis_summary.total_rows;
-    const totalCols = analysis_summary.total_columns;
+    if (fileData?.type !== 'excel' && file_detection?.type !== 'excel') return null;
+    
+    // Try to get info from analysis_summary first, then from file_detection
+    const totalSheets = analysis_summary?.total_sheets || file_detection?.sheet_count || 1;
+    const totalRows = analysis_summary?.total_rows || 'N/A';
+    const totalCols = analysis_summary?.total_columns || 'N/A';
+    
     return (
       <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
         <h4 className="font-semibold text-emerald-900 mb-2 flex items-center space-x-2">

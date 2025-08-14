@@ -116,7 +116,7 @@ export default function FileUpload({ onFileUploaded }: FileUploadProps) {
                   </div>
                 </div>
                 <p className="text-xs text-gray-400">
-                  Supported formats: CSV, Excel (.xlsx, .xls), PDF
+                  Supported formats: CSV (Recommended over Excel), Excel (.xlsx, .xls), PDF
                 </p>
               </div>
             )}
