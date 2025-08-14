@@ -6,23 +6,25 @@ python-multipart==0.0.6
 # Data processing - kompatibel dengan Python 3.11
 numpy==1.26.4
 pandas==2.1.4
-openpyxl==3.1.2
+
+# Excel processing - Multiple engines for better compatibility
+openpyxl==3.1.2          # For .xlsx files (newer Excel format)
+xlrd>=2.0.1,<3.0.0       # For .xls files (older Excel format)
+xlsxwriter>=3.1.0,<4.0.0 # For writing Excel files with formatting
+pyxlsb>=1.0.10,<2.0.0    # For .xlsb files (binary Excel format)
+
+# CSV processing enhancements
+chardet>=5.2.0,<6.0.0    # For automatic encoding detection
+python-csv>=1.0,<2.0.0   # Enhanced CSV handling (if needed)
+
+# Document processing
 PyPDF2==3.0.1
 python-docx==1.1.0
 
-# LangChain ecosystem - versi yang kompatibel
-langchain==0.1.0
-langchain-openai==0.0.5
-langchain-community==0.0.12
-langchain-core==0.1.0
+# Google Gemini AI
+google-generativeai>=0.3.0,<1.0.0
 
-# OpenAI
-openai>=1.6.1,<2.0.0
-
-# Vector database
-chromadb==0.4.22
-
-# Embeddings
+# Embeddings and similarity search
 sentence-transformers==2.2.2
 
 # Utilities
@@ -30,6 +32,20 @@ python-dotenv==1.0.0
 pydantic==2.5.0
 aiofiles==23.2.1
 
-# Additional dependencies for LangChain
-tiktoken>=0.5.0
-SQLAlchemy>=2.0.0
+# Additional dependencies yang diperlukan untuk analisis data
+scikit-learn>=1.3.0,<2.0.0  # Untuk analisis lanjutan jika diperlukan
+matplotlib>=3.7.0,<4.0.0    # Untuk visualisasi data
+seaborn>=0.12.0,<1.0.0      # Untuk statistical plotting
+
+# Security and validation
+python-jose[cryptography]>=3.3.0,<4.0.0  # Jika nantinya butuh JWT
+passlib[bcrypt]>=1.7.4,<2.0.0            # Untuk password hashing jika diperlukan
+
+# Optional: Performance improvements
+xlrd>=2.0.1,<3.0.0          # Untuk membaca file .xls lama
+xlsxwriter>=3.1.0,<4.0.0    # Untuk export Excel jika diperlukan
+chardet>=5.2.0,<6.0.0       # Untuk deteksi encoding yang lebih baik
+
+# Optional: Monitoring and logging (production)
+# prometheus-client>=0.17.0,<1.0.0
+# structlog>=23.1.0,<24.0.0
