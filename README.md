@@ -10,7 +10,7 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
 <p align="center">
    <a href="https://drive.google.com/uc?export=view&id=1BoU-OBqUZt7Q9yyj7u1YsfGLOTFl7oMH">
         <img src="https://drive.google.com/uc?export=view&id=1BoU-OBqUZt7Q9yyj7u1YsfGLOTFl7oMH"
-             alt="Tampilan Fitur AI Chatbot 2" width="440">
+             alt="Tampilan Fitur AI Chatbot 2" width="960">
       </a>
 </p>
 
@@ -19,7 +19,7 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
     <td align="center" width="50%">
       <a href="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M">
     <img src="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M"
-         alt="Tampilan Halaman Beranda" width="960">
+         alt="Tampilan Halaman Beranda" width="440">
   </a>
     </td>
     <td align="center" width="50%">
