@@ -7,23 +7,12 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
 ---
 
 ## ✨ Images
-<table align="center">
-  <tr>
-    <td align="center" width="50%">
-      <a href="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M">
-        <img src="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M"
-             alt="Tampilan Halaman AI Chatbot 1" width="440">
-      </a>
-    </td>
-    <td align="center" width="50%">
-      <a href="https://drive.google.com/uc?export=view&id=1A9ioqL6OIZ37Y-aklEs7kXQ7BiTSUk9L">
-        <img src="https://drive.google.com/uc?export=view&id=1A9ioqL6OIZ37Y-aklEs7kXQ7BiTSUk9L"
-             alt="Tampilan Fitur AI Chatbot 2" width="440">
-      </a>
-    </td>
-  </tr>
-</table>
-
+<p align="center">
+  <a href="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M">
+    <img src="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M"
+         alt="Tampilan Halaman Beranda" width="960">
+  </a>
+</p>
 
 <table align="center">
   <tr>
@@ -40,8 +29,15 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
       </a>
     </td>
   </tr>
+  <tr>
+  <td>
+        <a href="https://drive.google.com/uc?export=view&id=1A9ioqL6OIZ37Y-aklEs7kXQ7BiTSUk9L">
+        <img src="https://drive.google.com/uc?export=view&id=1A9ioqL6OIZ37Y-aklEs7kXQ7BiTSUk9L"
+             alt="Tampilan Fitur AI Chatbot 2" width="440">
+      </a>
+  </td>
+  </tr>
 </table>
-
 ---
 
 ## ✨ Key Features
