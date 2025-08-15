@@ -6,7 +6,7 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
 > Goal: let non-technical users “talk” to their data—fast.
 ---
 
-## ✨ Images
+## 🖼️ Images
 <p align="center">
   <a href="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M">
     <img src="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M"
@@ -30,7 +30,7 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
     </td>
   </tr>
   <tr>
-  <td>
+  <td align="center">
         <a href="https://drive.google.com/uc?export=view&id=1A9ioqL6OIZ37Y-aklEs7kXQ7BiTSUk9L">
         <img src="https://drive.google.com/uc?export=view&id=1A9ioqL6OIZ37Y-aklEs7kXQ7BiTSUk9L"
              alt="Tampilan Fitur AI Chatbot 2" width="440">
