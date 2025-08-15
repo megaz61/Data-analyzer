@@ -8,24 +8,24 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
 
 ## 🖼️ Images
 <p align="center">
-  <a href="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M">
-    <img src="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M"
-         alt="Tampilan Halaman Beranda" width="960">
-  </a>
+   <a href="https://drive.google.com/uc?export=view&id=1BoU-OBqUZt7Q9yyj7u1YsfGLOTFl7oMH">
+        <img src="https://drive.google.com/uc?export=view&id=1BoU-OBqUZt7Q9yyj7u1YsfGLOTFl7oMH"
+             alt="Tampilan Fitur AI Chatbot 2" width="440">
+      </a>
 </p>
 
 <table align="center">
   <tr>
     <td align="center" width="50%">
+      <a href="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M">
+    <img src="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M"
+         alt="Tampilan Halaman Beranda" width="960">
+  </a>
+    </td>
+    <td align="center" width="50%">
       <a href="https://drive.google.com/uc?export=view&id=1XyoxyeH_MFBgkHm7QKJ1ySf_bkHuDMIn">
         <img src="https://drive.google.com/uc?export=view&id=1XyoxyeH_MFBgkHm7QKJ1ySf_bkHuDMIn"
              alt="Tampilan Halaman AI Chatbot 1" width="440">
-      </a>
-    </td>
-    <td align="center" width="50%">
-      <a href="https://drive.google.com/uc?export=view&id=1BoU-OBqUZt7Q9yyj7u1YsfGLOTFl7oMH">
-        <img src="https://drive.google.com/uc?export=view&id=1BoU-OBqUZt7Q9yyj7u1YsfGLOTFl7oMH"
-             alt="Tampilan Fitur AI Chatbot 2" width="440">
       </a>
     </td>
   </tr>
