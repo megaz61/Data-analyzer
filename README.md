@@ -29,8 +29,8 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
       </a>
     </td>
   </tr>
-  <tr>
-  <td align="center">
+  <tr align="center">
+  <td >
         <a href="https://drive.google.com/uc?export=view&id=1A9ioqL6OIZ37Y-aklEs7kXQ7BiTSUk9L">
         <img src="https://drive.google.com/uc?export=view&id=1A9ioqL6OIZ37Y-aklEs7kXQ7BiTSUk9L"
              alt="Tampilan Fitur AI Chatbot 2" width="440">
