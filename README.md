@@ -4,6 +4,43 @@
 Upload a file → get **automatic summaries**, **data quality checks**, **chart suggestions**, and **ask anything** about the document via AI.
 
 > Goal: let non-technical users “talk” to their data—fast.
+---
+
+## ✨ Images
+<table align="center">
+  <tr>
+    <td align="center" width="50%">
+      <a href="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M">
+        <img src="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M"
+             alt="Tampilan Halaman AI Chatbot 1" width="440">
+      </a>
+    </td>
+    <td align="center" width="50%">
+      <a href="https://drive.google.com/uc?export=view&id=1A9ioqL6OIZ37Y-aklEs7kXQ7BiTSUk9L">
+        <img src="https://drive.google.com/uc?export=view&id=1A9ioqL6OIZ37Y-aklEs7kXQ7BiTSUk9L"
+             alt="Tampilan Fitur AI Chatbot 2" width="440">
+      </a>
+    </td>
+  </tr>
+</table>
+
+
+<table align="center">
+  <tr>
+    <td align="center" width="50%">
+      <a href="https://drive.google.com/uc?export=view&id=1XyoxyeH_MFBgkHm7QKJ1ySf_bkHuDMIn">
+        <img src="https://drive.google.com/uc?export=view&id=1XyoxyeH_MFBgkHm7QKJ1ySf_bkHuDMIn"
+             alt="Tampilan Halaman AI Chatbot 1" width="440">
+      </a>
+    </td>
+    <td align="center" width="50%">
+      <a href="https://drive.google.com/uc?export=view&id=1BoU-OBqUZt7Q9yyj7u1YsfGLOTFl7oMH">
+        <img src="https://drive.google.com/uc?export=view&id=1BoU-OBqUZt7Q9yyj7u1YsfGLOTFl7oMH"
+             alt="Tampilan Fitur AI Chatbot 2" width="440">
+      </a>
+    </td>
+  </tr>
+</table>
 
 ---
 
@@ -48,22 +85,6 @@ Used for:
 
 ---
 
-## 🏗️ Architecture (High Level)
-
-```mermaid
-flowchart TD
-    A[Upload File (PDF/CSV/Excel)] --> B[FastAPI /upload]
-    B --> C[Detect & Analyze: Pandas / PyPDF2]
-    C --> D[Build Analysis Summary + Chart Specs]
-    D --> E[RAG Index: Chunk + Embedding (MiniLM)]
-    E --> F[(In-memory Vector Store)]
-    F --> G[/file/{id} (details)]
-    G --> H[Next.js UI: Summaries + Charts]
-    H --> I[User asks /chat]
-    I --> J[Retrieve Top-K (cosine similarity)]
-    J --> K[Gemini 1.5 Flash: Answer]
-    K --> H
-```
 
 ---
 
