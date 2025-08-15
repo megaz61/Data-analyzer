@@ -221,26 +221,6 @@ curl -X POST "http://localhost:8000/upload" \
 
 ---
 
-## 🗺️ Roadmap
-
-- Export dashboard/insight to PDF/PNG  
-- `.docx` support  
-- Persistence (S3/MinIO) + Vector DB (FAISS/Chroma/Pinecone)  
-- User auth & multi-file workspace
-
----
-
-## 🤝 Contributing
-
-Contributions welcome!  
-Open an **issue** or **pull request** for bugs, improvements, or features.
-
----
-
-## 📄 License
-
-MIT — free to use & modify.
-
 ---
 
 Built with ❤️ by **Ega**.  
