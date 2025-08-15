@@ -30,7 +30,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">AI Data Analysis</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Data Assistant</h1>
               <p className="text-gray-600">Upload, analyze, and chat with your data</p>
             </div>
             <div className="flex items-center space-x-2">
@@ -82,7 +82,7 @@ export default function Home() {
           >
             <div className="mb-8">
               <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                Welcome to AI Data Analysis
+                Welcome to Data Assistant
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
                 Upload your data files (CSV, Excel, PDF, Word, or Text) and let our AI 
@@ -134,7 +134,7 @@ export default function Home() {
       <footer className="bg-white border-t mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center text-gray-600">
-            <p>© 2024 AI Data Analysis. Built with Next.js, FastAPI, and OpenAI.</p>
+            <p>© 2025 Data Assistant. Built with Next.js, FastAPI, and Gemini AI.</p>
           </div>
         </div>
       </footer>

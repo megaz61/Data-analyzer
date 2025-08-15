@@ -293,37 +293,37 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
             <span>Document Statistics</span>
           </h4>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 text-sm">
-            <div className="flex flex-col">
+            <div className="flex space-x-1">
               <span className="text-red-600">Pages:</span> 
               <span className="font-medium text-red-900">
                 {analysis_summary.page_count || file_detection?.page_count || 'N/A'}
               </span>
             </div>
-            <div className="flex flex-col">
+            <div className="flex space-x-1">
               <span className="text-red-600">Words:</span> 
               <span className="font-medium text-red-900">
                 {analysis_summary.word_count || 'N/A'}
               </span>
             </div>
-            <div className="flex flex-col">
+            <div className="flex space-x-1">
               <span className="text-red-600">Characters:</span> 
               <span className="font-medium text-red-900">
                 {analysis_summary.char_count || 'N/A'}
               </span>
             </div>
-            <div className="flex flex-col">
+            <div className="flex space-x-1">
               <span className="text-red-600">Sentences:</span> 
               <span className="font-medium text-red-900">
                 {analysis_summary.sentence_count || 'N/A'}
               </span>
             </div>
-            <div className="flex flex-col">
-              <span className="text-red-600">Reading Time:</span> 
+            {/* <div className="flex flex-col">
+              <span className="text-red-600">Estimated Human Reading Time:</span> 
               <span className="font-medium text-red-900">
                 {analysis_summary.reading_time_minutes ? `${analysis_summary.reading_time_minutes} min` : 'N/A'}
               </span>
-            </div>
-            <div className="flex flex-col">
+            </div> */}
+            <div className="flex space-x-1">
               <span className="text-red-600">Avg Words/Page:</span> 
               <span className="font-medium text-red-900">
                 {analysis_summary.average_words_per_page || 'N/A'}

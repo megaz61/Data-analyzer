@@ -10,6 +10,7 @@ import re
 from datetime import datetime
 import google.generativeai as genai
 from dotenv import load_dotenv
+import time
 
 load_dotenv()
 
@@ -676,6 +677,12 @@ class EnhancedFileProcessor:
         # Content analysis
         lines = full_text.split('\n')
         non_empty_lines = [line for line in lines if line.strip()]
+
+        #Hitung durasi proses
+        start_time = time.time()
+        end_time = time.time()
+        processing_time_seconds = end_time - start_time
+
         
         return {
             'pages': len(page_texts),
@@ -690,7 +697,8 @@ class EnhancedFileProcessor:
             'average_chars_per_page': round(len(full_text) / len(page_texts), 2) if page_texts else 0,
             'longest_paragraph': max(len(p) for p in paragraphs) if paragraphs else 0,
             'average_paragraph_length': round(sum(len(p) for p in paragraphs) / len(paragraphs), 2) if paragraphs else 0,
-            'reading_time_minutes': round(len(words) / 200, 1)  # Assuming 200 words per minute
+            'reading_time_minutes': round(len(words) / 300, 1), # Assuming people read 300 words per minute
+            'processing_time_seconds': f'{processing_time_seconds:.4f}',# Assuming 200 words per minute
         }
     
     def _generate_pdf_summary(self, text: str) -> str:
