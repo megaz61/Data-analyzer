@@ -88,20 +88,39 @@ Used for:
 
 ```
 data-assistant/
-├─ backend/
-│  ├─ app/
-│  │  ├─ main.py                # FastAPI routes (/upload, /file/{id}, /chat, ...)
-│  │  ├─ models/schemas.py      # Pydantic I/O schemas
-│  │  └─ services/
-│  │     ├─ file_processor.py   # PDF/CSV/Excel analysis + chart & data quality
-│  │     ├─ rag_service.py      # RAG: chunking, embeddings, retrieval, Gemini
-│  │     └─ data_analyzer.py    # (Optional) narrative insight generator
-│  ├─ requirements.txt
-│  └─ .env.example
-└─ frontend/
-   ├─ src/ (Next.js app + components)
-   ├─ package.json
-   └─ .env.local.example
+├── backend/
+│   ├── app/
+│   │   ├── main.py
+│   │   ├── models/schemas.py
+│   │   └── services/
+│   │       ├── file_processor.py
+│   │       ├── rag_service.py
+│   │       └── data_analyzer.py
+│   ├── requirements.txt
+│   └── .env.example
+├── frontend/
+│   ├── public/
+│   │   └── favicon.ico
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── api/
+│   │   │   ├── globals.css
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx
+│   │   ├── components/
+│   │   │   ├── Chat.tsx
+│   │   │   ├── DataVisualization.tsx
+│   │   │   ├── FileUpload.tsx
+│   │   │   └── LoadingSpinner.tsx
+│   │   └── lib/
+│   │       ├── api.ts
+│   │       └── types/
+│   │           └── index.ts
+│   ├── .env
+│   ├── .next/
+│   ├── node_modules/
+│   ├── package.json
+│   └── package-lock.json
 ```
 
 ---
