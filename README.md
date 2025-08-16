@@ -97,7 +97,7 @@ data-assistant/
 │   │       ├── rag_service.py
 │   │       └── data_analyzer.py
 │   ├── requirements.txt
-│   └── .env.example
+│   └── .env
 ├── frontend/
 │   ├── public/
 │   │   └── favicon.ico
