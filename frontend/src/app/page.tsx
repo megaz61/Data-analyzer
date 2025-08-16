@@ -100,7 +100,7 @@ export default function Home() {
             className="space-y-6"
           >
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Data Analysis Results</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Descriptive Analysis Results</h2>
               <p className="text-gray-600">Here's what we found in your data</p>
             </div>
             <DataVisualization fileData={uploadedFile} />
