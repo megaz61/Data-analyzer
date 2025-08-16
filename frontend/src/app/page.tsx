@@ -85,7 +85,7 @@ export default function Home() {
                 Welcome to Data Assistant
               </h2>
               <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Upload your data files (CSV, Excel, PDF, Word, or Text) and let our AI 
+                Upload your data files (CSV, Excel, PDF, Word) and let our AI 
                 analyze them. Then chat with your data to get insights and answers.
               </p>
             </div>
