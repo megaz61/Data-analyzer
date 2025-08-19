@@ -8,30 +8,55 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
 
 ```markdown
 
-## 🖼️ Images
-
-> **📁 [Lihat semua gambar dalam resolusi penuh di Google Drive](https://drive.google.com/drive/folders/1GJEoxP_fvslCKBELYZ0eBUp1vTCo008i?usp=sharing)**
-
-### Chat Interface
-<p align="center">
-    <a href="./images/chat-interface.png">
-        <img src="./images/chat-interface.png"
-             alt="Chat Interface" width="900" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-    </a>
-</p>
-
-### Dashboard & Analytics
+```
+🖼️ Screenshots & Results
+🤖 AI Chat Assistant
+The heart of our application - intelligent document Q&A with contextual responses.
 <div align="center">
-    
-| Home Dashboard | CSV Data Analysis |
-|:---:|:---:|
-| <a href="./images/home-dashboard.png"><img src="./images/home-dashboard.png" alt="Dashboard" height="300" style="border-radius: 6px;"></a> | <a href="./images/csv-analysis-1.png"><img src="./images/csv-analysis-1.png" alt="CSV Analysis 1" height="300" style="border-radius: 6px;"></a> |
-| **Data Visualization** | **Report Generation** |
-| <a href="./images/csv-analysis-2.png"><img src="./images/csv-analysis-2.png" alt="CSV Analysis 2" height="300" style="border-radius: 6px;"></a> | <a href="./images/report.png"><img src="./images/report.png" alt="Report" height="300" style="border-radius: 6px;"></a> |
+  <img src="Result and Example_dataset/Result/chat-assistData.png" 
+       alt="AI Chat Assistant Interface" 
+       width="800" 
+       style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+</div>
 
+📊 CSV Data Analysis Results
+Comprehensive statistical analysis and insights from uploaded CSV files.
+<div align="center">
+Basic Statistics & Data Overview
+<img src="Result and Example_dataset/Result/descriptive-result-csv1.png" 
+  alt="CSV Analysis - Basic Statistics" 
+  width="700" 
+  style="border-radius: 6px; margin: 10px;">
+Data Quality & Distribution Analysis
+<img src="Result and Example_dataset/Result/descriptive-result-csv2.png" 
+  alt="CSV Analysis - Data Quality" 
+  width="700" 
+  style="border-radius: 6px; margin: 10px;">
+Advanced Analytics & Insights
+<img src="Result and Example_dataset/Result/descriptive-result-csv3.png" 
+  alt="CSV Analysis - Advanced Analytics" 
+  width="700" 
+  style="border-radius: 6px; margin: 10px;">
+</div>
+
+📄 PDF Document Analysis
+Smart extraction and summarization of PDF content with metadata analysis.
+<div align="center">
+  <img src="Result and Example_dataset/Result/descriptive-result-pdf.png" 
+       alt="PDF Analysis Results" 
+       width="700" 
+       style="border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+</div>
+
+📁 Upload Interface
+Simple and intuitive file upload experience supporting PDF, CSV, and Excel formats.
+<div align="center">
+  <img src="Result and Example_dataset/Result/upload-data-page.png" 
+       alt="Upload Data Interface" 
+       width="700" 
+       style="border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
 </div>
 ```
-
 
 ## ✨ Key Features
 
