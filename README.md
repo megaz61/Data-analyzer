@@ -8,7 +8,7 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
 
 ```markdown
 
-```markdown
+```
 ## 🖼️ Screenshots & Demo
 
 ### 🤖 AI Chat Assistant
