@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import {
   FileSpreadsheet,
@@ -8,7 +10,6 @@ import {
   AlertTriangle,
   CheckCircle,
   Info,
-  Clock,
   Database,
   Eye,
   Activity,
@@ -24,10 +25,7 @@ import {
   YAxis,
   Tooltip,
   Legend,
-  Cell
-} from 'recharts';
-
-import {
+  Cell,
   LineChart,
   Line,
   AreaChart,
@@ -37,7 +35,7 @@ import {
   PieChart,
   Pie,
   ScatterChart,
-  Scatter
+  Scatter,
 } from 'recharts';
 
 interface DataVisualizationProps {
@@ -51,44 +49,43 @@ interface DataVisualizationProps {
   };
 }
 
+const chartColors = [
+  '#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1',
+  '#d084d0', '#ffb347', '#87ceeb', '#dda0dd', '#98fb98'
+];
+
+const formatDateTick = (val: any) => {
+  // backend sudah kirim 'YYYY-MM-DD', ini sekadar jaga-jaga
+  const s = String(val);
+  if (/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0, 10);
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? s : d.toISOString().slice(0, 10);
+};
+
 const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
   const { analysis_summary, file_detection } = fileData || {};
 
-  // For Excel files, get analysis from the first sheet if analysis_summary doesn't have detailed info
-  const getAnalysisData = () => {
+  // Ambil analisis dari sheet pertama jika Excel
+  const analysisData = React.useMemo(() => {
     if (fileData?.type === 'excel' && fileData.data) {
-      const firstSheetName = Object.keys(fileData.data)[0];
-      if (firstSheetName && fileData.data[firstSheetName]?.analysis) {
-        return fileData.data[firstSheetName].analysis;
+      const first = Object.keys(fileData.data)[0];
+      if (first && fileData.data[first]?.analysis) {
+        return fileData.data[first].analysis;
       }
     }
     return analysis_summary;
-  };
-
-  const analysisData = getAnalysisData();
+  }, [fileData, analysis_summary]);
 
   const getQualityColor = (score: number) => {
     if (score >= 80) return 'text-green-600 bg-green-50 border-green-200';
     if (score >= 60) return 'text-yellow-600 bg-yellow-50 border-yellow-200';
     return 'text-red-600 bg-red-50 border-red-200';
   };
+  const getQualityIcon = (score: number) => (score >= 80 ? <CheckCircle className="w-5 h-5" /> : <AlertTriangle className="w-5 h-5" />);
 
-  const getQualityIcon = (score: number) => {
-    if (score >= 80) return <CheckCircle className="w-5 h-5" />;
-    if (score >= 60) return <AlertTriangle className="w-5 h-5" />;
-    return <AlertTriangle className="w-5 h-5" />;
-  };
-
-  // Palette untuk chart
-  const chartColors = [
-    '#8884d8', '#82ca9d', '#ffc658', '#ff7c7c', '#8dd1e1',
-    '#d084d0', '#ffb347', '#87ceeb', '#dda0dd', '#98fb98'
-  ];
-
-  // === File detection ===
+  // ------------- File detection -------------
   const renderFileDetection = () => {
     if (!file_detection) return null;
-
     return (
       <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
         <h4 className="font-semibold text-blue-900 mb-3 flex items-center space-x-2">
@@ -96,55 +93,27 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
           <span>File Detection & Analysis</span>
         </h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-          <div>
-            <span className="text-blue-600">Type:</span>
-            <span className="ml-2 font-medium text-blue-900">
-              {file_detection.type?.toUpperCase()}
-            </span>
-          </div>
-          <div>
-            <span className="text-blue-600">Size:</span>
-            <span className="ml-2 font-medium text-blue-900">{file_detection.size_mb} MB</span>
-          </div>
+          <div><span className="text-blue-600">Type:</span><span className="ml-2 font-medium text-blue-900">{file_detection.type?.toUpperCase()}</span></div>
+          <div><span className="text-blue-600">Size:</span><span className="ml-2 font-medium text-blue-900">{file_detection.size_mb} MB</span></div>
 
           {file_detection.type === 'csv' && (
             <>
-              <div>
-                <span className="text-blue-600">Encoding:</span>
-                <span className="ml-2 font-medium text-blue-900">{file_detection.encoding}</span>
-              </div>
-              <div>
-                <span className="text-blue-600">Delimiter:</span>
-                <span className="ml-2 font-medium text-blue-900">"{file_detection.delimiter}"</span>
-              </div>
+              <div><span className="text-blue-600">Encoding:</span><span className="ml-2 font-medium text-blue-900">{file_detection.encoding}</span></div>
+              <div><span className="text-blue-600">Delimiter:</span><span className="ml-2 font-medium text-blue-900">"{file_detection.delimiter}"</span></div>
             </>
           )}
 
           {file_detection.type === 'excel' && (
             <>
-              <div>
-                <span className="text-blue-600">Sheets:</span>
-                <span className="ml-2 font-medium text-blue-900">{file_detection.sheet_count}</span>
-              </div>
-              <div>
-                <span className="text-blue-600">Engine:</span>
-                <span className="ml-2 font-medium text-blue-900">{file_detection.engine}</span>
-              </div>
+              <div><span className="text-blue-600">Sheets:</span><span className="ml-2 font-medium text-blue-900">{file_detection.sheet_count}</span></div>
+              <div><span className="text-blue-600">Engine:</span><span className="ml-2 font-medium text-blue-900">{file_detection.engine}</span></div>
             </>
           )}
 
           {file_detection.type === 'pdf' && (
             <>
-              <div>
-                <span className="text-blue-600">Pages:</span>
-                <span className="ml-2 font-medium text-blue-900">{file_detection.page_count}</span>
-              </div>
-              <div>
-                <span className="text-blue-600">Extractable:</span>
-                <span className="ml-2 font-medium text-blue-900">
-                  {file_detection.estimated_extractable ? 'Yes' : 'No'}
-                </span>
-              </div>
+              <div><span className="text-blue-600">Pages:</span><span className="ml-2 font-medium text-blue-900">{file_detection.page_count}</span></div>
+              <div><span className="text-blue-600">Extractable:</span><span className="ml-2 font-medium text-blue-900">{file_detection.estimated_extractable ? 'Yes' : 'No'}</span></div>
             </>
           )}
         </div>
@@ -152,7 +121,7 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
     );
   };
 
-  // === Column types ===
+  // ------------- Column types -------------
   const renderColumnTypes = () => {
     const columnTypes = analysisData?.column_types;
     if (!columnTypes) return null;
@@ -182,16 +151,10 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
               <div className="flex-1">
                 <span className="font-medium text-gray-900">{column}</span>
                 <div className="flex items-center space-x-2 mt-1">
-                  <span
-                    className={`px-2 py-1 text-xs rounded-full ${
-                      typeColors[info.detected_type as keyof typeof typeColors] || 'bg-gray-100 text-gray-800'
-                    }`}
-                  >
+                  <span className={`px-2 py-1 text-xs rounded-full ${typeColors[info.detected_type] || 'bg-gray-100 text-gray-800'}`}>
                     {info.detected_type}
                   </span>
-                  {'confidence' in info && (
-                    <span className="text-xs text-gray-500">{info.confidence}% confidence</span>
-                  )}
+                  {'confidence' in info && <span className="text-xs text-gray-500">{info.confidence}% confidence</span>}
                 </div>
               </div>
               <div className="text-right text-sm text-gray-600">
@@ -205,46 +168,29 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
     );
   };
 
-  // === Data quality ===
+  // ------------- Data quality -------------
   const renderDataQuality = () => {
     const quality = analysisData?.data_quality;
     if (!quality) return null;
-
     const score = quality.data_quality_score || 0;
 
     return (
       <div className={`p-4 rounded-lg border ${getQualityColor(score)}`}>
         <h4 className="font-semibold mb-3 flex items-center space-x-2">
-          {getQualityIcon(score)}
-          <span>Data Quality Assessment</span>
+          {getQualityIcon(score)} <span>Data Quality Assessment</span>
         </h4>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-          <div>
-            <div className="font-medium">Overall Score</div>
-            <div className="text-lg font-bold">{score}/100</div>
-          </div>
-          <div>
-            <div className="font-medium">Completeness</div>
-            <div>{quality.completeness_percentage}%</div>
-          </div>
-          <div>
-            <div className="font-medium">Duplicates</div>
-            <div>
-              {quality.duplicate_rows} rows ({quality.duplicate_percentage}%)
-            </div>
-          </div>
-          <div>
-            <div className="font-medium">High Null Columns</div>
-            <div>{quality.high_null_columns?.length || 0}</div>
-          </div>
+          <div><div className="font-medium">Overall Score</div><div className="text-lg font-bold">{score}/100</div></div>
+          <div><div className="font-medium">Completeness</div><div>{quality.completeness_percentage}%</div></div>
+          <div><div className="font-medium">Duplicates</div><div>{quality.duplicate_rows} rows ({quality.duplicate_percentage}%)</div></div>
+          <div><div className="font-medium">High Null Columns</div><div>{quality.high_null_columns?.length || 0}</div></div>
         </div>
-
         {quality.high_null_columns?.length > 0 && (
           <div className="mt-3 pt-3 border-t">
             <div className="text-sm font-medium mb-2">Columns with &gt; 50% missing data:</div>
             <div className="flex flex-wrap gap-2">
-              {quality.high_null_columns.map((col: any, idx: number) => (
-                <span key={idx} className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded">
+              {quality.high_null_columns.map((col: any, i: number) => (
+                <span key={i} className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded">
                   {col.column} ({col.null_percentage}%)
                 </span>
               ))}
@@ -255,35 +201,35 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
     );
   };
 
-  // === PDF statistics - FIXED VERSION ===
+  // ------------- PDF stats (memakai key dari backend baru) -------------
   const renderPDFStats = () => {
-    // Debug logs untuk troubleshooting
-    console.log('=== PDF STATS DEBUG ===');
-    console.log('fileData.type:', fileData?.type);
-    console.log('file_detection.type:', file_detection?.type);
-    console.log('analysis_summary exists:', !!analysis_summary);
+    if (!analysis_summary) return null;
 
-    // Return null jika tidak ada analysis_summary
-    if (!analysis_summary) {
-      console.log('No analysis_summary, returning null');
-      return null;
-    }
-
-    // Cek apakah file adalah PDF menggunakan beberapa metode
-    const isPDF = (
+    const isPDF =
       file_detection?.type === 'pdf' ||
-      (fileData?.type || '').toLowerCase().trim() === 'pdf' ||
-      (fileData?.filename && fileData.filename.toLowerCase().endsWith('.pdf'))
-    );
+      (fileData?.type || '').toLowerCase() === 'pdf' ||
+      (fileData?.filename || '').toLowerCase().endsWith('.pdf');
 
-    console.log('isPDF:', isPDF);
+    if (!isPDF) return null;
 
-    if (!isPDF) {
-      console.log('Not a PDF file, returning null');
-      return null;
-    }
+    const pages = analysis_summary.page_count ?? analysis_summary.pages ?? file_detection?.page_count ?? 'N/A';
+    const extract = analysis_summary.extraction_info ?? {};
+    const success =
+      typeof extract.success_rate === 'number'
+        ? `${extract.success_rate}%`
+        : (typeof extract.extraction_success_rate === 'number'
+            ? `${extract.extraction_success_rate}%`
+            : 'N/A');
 
-    console.log('Rendering PDF stats component');
+    const pagesWithText =
+      extract.pages_with_text ??
+      extract.pages_with_text_count ??
+      'N/A';
+    const totalPages =
+      extract.total_pages ??
+      extract.total_pages_processed ??
+      analysis_summary.page_count ??
+      'N/A';
 
     return (
       <div className="space-y-4">
@@ -293,42 +239,11 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
             <span>Document Statistics</span>
           </h4>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 text-sm">
-            <div className="flex space-x-1">
-              <span className="text-red-600">Pages:</span> 
-              <span className="font-medium text-red-900">
-                {analysis_summary.page_count || file_detection?.page_count || 'N/A'}
-              </span>
-            </div>
-            <div className="flex space-x-1">
-              <span className="text-red-600">Words:</span> 
-              <span className="font-medium text-red-900">
-                {analysis_summary.word_count || 'N/A'}
-              </span>
-            </div>
-            <div className="flex space-x-1">
-              <span className="text-red-600">Characters:</span> 
-              <span className="font-medium text-red-900">
-                {analysis_summary.char_count || 'N/A'}
-              </span>
-            </div>
-            <div className="flex space-x-1">
-              <span className="text-red-600">Sentences:</span> 
-              <span className="font-medium text-red-900">
-                {analysis_summary.sentence_count || 'N/A'}
-              </span>
-            </div>
-            {/* <div className="flex flex-col">
-              <span className="text-red-600">Estimated Human Reading Time:</span> 
-              <span className="font-medium text-red-900">
-                {analysis_summary.reading_time_minutes ? `${analysis_summary.reading_time_minutes} min` : 'N/A'}
-              </span>
-            </div> */}
-            <div className="flex space-x-1">
-              <span className="text-red-600">Avg Words/Page:</span> 
-              <span className="font-medium text-red-900">
-                {analysis_summary.average_words_per_page || 'N/A'}
-              </span>
-            </div>
+            <div className="flex space-x-1"><span className="text-red-600">Pages:</span><span className="font-medium text-red-900">{pages}</span></div>
+            <div className="flex space-x-1"><span className="text-red-600">Words:</span><span className="font-medium text-red-900">{analysis_summary.word_count ?? 'N/A'}</span></div>
+            <div className="flex space-x-1"><span className="text-red-600">Characters:</span><span className="font-medium text-red-900">{analysis_summary.char_count ?? 'N/A'}</span></div>
+            <div className="flex space-x-1"><span className="text-red-600">Sentences:</span><span className="font-medium text-red-900">{analysis_summary.sentence_count ?? 'N/A'}</span></div>
+            <div className="flex space-x-1"><span className="text-red-600">Avg Words/Page:</span><span className="font-medium text-red-900">{analysis_summary.average_words_per_page ?? 'N/A'}</span></div>
           </div>
         </div>
 
@@ -342,38 +257,35 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
           </div>
         )}
 
-        {analysis_summary.extraction_info && (
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <h4 className="font-semibold text-gray-900 mb-3">Extraction Information</h4>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <div className="text-gray-600">Success Rate:</div>
-                <div className="font-medium text-gray-900">
-                  {analysis_summary.extraction_info.extraction_success_rate?.toFixed(1) || 'N/A'}%
-                </div>
-              </div>
-              <div>
-                <div className="text-gray-600">Pages with Text:</div>
-                <div className="font-medium text-gray-900">
-                  {analysis_summary.extraction_info.pages_with_text || 'N/A'} /{' '}
-                  {analysis_summary.extraction_info.total_pages_processed || 'N/A'}
-                </div>
-              </div>
-            </div>
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+          <h4 className="font-semibold text-gray-900 mb-3">Extraction Information</h4>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div><div className="text-gray-600">Success Rate:</div><div className="font-medium text-gray-900">{success}</div></div>
+            <div><div className="text-gray-600">Pages with Text:</div><div className="font-medium text-gray-900">{pagesWithText} / {totalPages}</div></div>
           </div>
-        )}
+        </div>
       </div>
     );
   };
 
-  // === Intelligent charts (sesuai backend) ===
+  // ------------- Intelligent charts -------------
   const renderIntelligentCharts = () => {
     const intelligentCharts = analysisData?.intelligent_charts;
     if (!intelligentCharts || Object.keys(intelligentCharts).length === 0) return null;
 
     const entries = Object.entries(intelligentCharts) as [string, any][];
 
-    const getChartIcon = (type: string) => {
+    const purposeMap: Record<string, string> = {
+      time_series: 'Analisis Tren Waktu',
+      ranking: 'Ranking & Perbandingan',
+      distribution: 'Distribusi Data',
+      correlation: 'Analisis Korelasi',
+      proportion: 'Proporsi & Komposisi',
+      cumulative: 'Analisis Kumulatif',
+      composition: 'Komposisi',
+    };
+
+    const getIcon = (type: string) => {
       switch (type) {
         case 'line': return <TrendingUp className="w-4 h-4 text-blue-600" />;
         case 'horizontal_bar': return <BarChart2 className="w-4 h-4 text-green-600" />;
@@ -385,58 +297,45 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
       }
     };
 
-    const purposeMap: Record<string, string> = {
-      time_series: 'Analisis Tren Waktu',
-      ranking: 'Ranking & Perbandingan',
-      distribution: 'Distribusi Data',
-      correlation: 'Analisis Korelasi',
-      proportion: 'Proporsi & Komposisi',
-      cumulative: 'Analisis Kumulatif',
-    };
-
-    return entries.map(([chartId, chartInfo], idx) => {
-      const { type, title, chart_purpose } = chartInfo;
+    return entries.map(([chartId, c], idx) => {
+      const { type, title, chart_purpose } = c;
+      const seriesName = c.series_name || c.y_label || 'Series';
 
       // LINE / AREA
       if (type === 'line' || type === 'area') {
-        const data = (chartInfo.x_data || []).map((x: any, i: number) => ({
-          x,
-          y: (chartInfo.y_data || [])[i],
-        }));
+        const data = (c.x_data || []).map((x: any, i: number) => ({ x, y: (c.y_data || [])[i] }));
+        const xTick = c?.x_axis_hint?.is_datetime ? formatDateTick : (v: any) => v;
 
         return (
           <div key={chartId} className="bg-white border rounded-lg p-4 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2">
-                {getChartIcon(type)}
+                {getIcon(type)}
                 <div>
                   <span className="font-medium">{title}</span>
                   <div className="text-xs text-gray-500">{purposeMap[chart_purpose] || 'Analisis Data'}</div>
                 </div>
               </div>
-              {'correlation' in chartInfo && (
-                <div className="text-xs text-gray-500">Korelasi: {chartInfo.correlation}</div>
-              )}
             </div>
 
             <ResponsiveContainer width="100%" height={300}>
               {type === 'line' ? (
                 <LineChart data={data}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="x" />
+                  <XAxis dataKey="x" tickFormatter={xTick} minTickGap={20} />
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="y" stroke="#8884d8" strokeWidth={2} dot={false} />
+                  <Line name={seriesName} type="monotone" dataKey="y" stroke="#8884d8" strokeWidth={2} dot={false} />
                 </LineChart>
               ) : (
                 <AreaChart data={data}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="x" />
+                  <XAxis dataKey="x" tickFormatter={xTick} minTickGap={20} />
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Area type="monotone" dataKey="y" stroke="#8884d8" fill="#8884d8" fillOpacity={0.3} />
+                  <Area name={seriesName} type="monotone" dataKey="y" stroke="#8884d8" fill="#8884d8" fillOpacity={0.3} />
                 </AreaChart>
               )}
             </ResponsiveContainer>
@@ -446,15 +345,13 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
 
       // HORIZONTAL BAR
       if (type === 'horizontal_bar') {
-        const data = (chartInfo.y_data || []).map((label: any, i: number) => ({
-          label,
-          value: (chartInfo.x_data || [])[i],
-        }));
+        const data = (c.y_data || []).map((label: any, i: number) => ({ label, value: (c.x_data || [])[i] }));
+        const name = c.series_name || c.x_label || 'Value';
 
         return (
           <div key={chartId} className="bg-white border rounded-lg p-4 shadow-sm">
             <div className="flex items-center space-x-2 mb-4">
-              {getChartIcon(type)}
+              {getIcon(type)}
               <div>
                 <span className="font-medium">{title}</span>
                 <div className="text-xs text-gray-500">{purposeMap[chart_purpose] || 'Analisis Data'}</div>
@@ -468,10 +365,8 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
                 <YAxis dataKey="label" type="category" width={100} />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="value" fill="#82ca9d">
-                  {data.map((_d: any, i: number) => (
-                    <Cell key={i} fill={chartColors[i % chartColors.length]} />
-                  ))}
+                <Bar name={name} dataKey="value" fill="#82ca9d">
+                  {data.map((_d: any, i: number) => <Cell key={i} fill={chartColors[i % chartColors.length]} />)}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -481,24 +376,25 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
 
       // HISTOGRAM
       if (type === 'histogram') {
-        const data = (chartInfo.bin_centers || []).map((center: number, i: number) => ({
+        const data = (c.bin_centers || []).map((center: number, i: number) => ({
           bin: typeof center === 'number' ? center.toFixed(2) : String(center),
-          count: (chartInfo.counts || [])[i],
+          count: (c.counts || [])[i],
         }));
+        const name = c.series_name || 'Frekuensi';
 
         return (
           <div key={chartId} className="bg-white border rounded-lg p-4 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2">
-                {getChartIcon(type)}
+                {getIcon(type)}
                 <div>
                   <span className="font-medium">{title}</span>
                   <div className="text-xs text-gray-500">{purposeMap[chart_purpose] || 'Distribusi Data'}</div>
                 </div>
               </div>
-              {chartInfo.stats && (
+              {c.stats && (
                 <div className="text-xs text-gray-500">
-                  Mean: {chartInfo.stats.mean?.toFixed(2)} | Median: {chartInfo.stats.median?.toFixed(2)}
+                  Mean: {c.stats.mean?.toFixed(2)} | Median: {c.stats.median?.toFixed(2)}
                 </div>
               )}
             </div>
@@ -510,10 +406,8 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="count" fill="#8884d8">
-                  {data.map((_d: any, i: number) => (
-                    <Cell key={i} fill={chartColors[i % chartColors.length]} />
-                  ))}
+                <Bar name={name} dataKey="count" fill="#8884d8">
+                  {data.map((_d: any, i: number) => <Cell key={i} fill={chartColors[i % chartColors.length]} />)}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -523,34 +417,30 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
 
       // SCATTER
       if (type === 'scatter') {
-        const data = (chartInfo.x_data || []).map((x: any, i: number) => ({
-          x,
-          y: (chartInfo.y_data || [])[i],
-        }));
+        const data = (c.x_data || []).map((x: any, i: number) => ({ x, y: (c.y_data || [])[i] }));
+        const name = c.series_name || c.y_label || 'Series';
 
         return (
           <div key={chartId} className="bg-white border rounded-lg p-4 shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2">
-                {getChartIcon(type)}
+                {getIcon(type)}
                 <div>
                   <span className="font-medium">{title}</span>
                   <div className="text-xs text-gray-500">{purposeMap[chart_purpose] || 'Analisis Korelasi'}</div>
                 </div>
               </div>
-              {'correlation' in chartInfo && (
-                <div className="text-xs text-gray-500">r = {chartInfo.correlation}</div>
-              )}
+              {'correlation' in c && <div className="text-xs text-gray-500">r = {c.correlation}</div>}
             </div>
 
             <ResponsiveContainer width="100%" height={300}>
               <ScatterChart>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" dataKey="x" name={chartInfo.x_label || 'x'} />
-                <YAxis type="number" dataKey="y" name={chartInfo.y_label || 'y'} />
+                <XAxis type="number" dataKey="x" name={c.x_label || 'x'} />
+                <YAxis type="number" dataKey="y" name={c.y_label || 'y'} />
                 <Tooltip cursor={{ strokeDasharray: '3 3' }} />
                 <Legend />
-                <Scatter name={title} data={data} fill="#ff7c7c" />
+                <Scatter name={name} data={data} fill="#ff7c7c" />
               </ScatterChart>
             </ResponsiveContainer>
           </div>
@@ -559,18 +449,14 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
 
       // PIE
       if (type === 'pie') {
-        const data = (chartInfo.labels || []).map((label: any, i: number) => ({
-          name: label,
-          value: (chartInfo.data || [])[i],
-        }));
-
+        const data = (c.labels || []).map((label: any, i: number) => ({ name: label, value: (c.data || [])[i] }));
         return (
           <div key={chartId} className="bg-white border rounded-lg p-4 shadow-sm">
             <div className="flex items-center space-x-2 mb-4">
-              {getChartIcon(type)}
+              {getIcon(type)}
               <div>
                 <span className="font-medium">{title}</span>
-                <div className="text-xs text-gray-500">{purposeMap[chart_purpose] || 'Proporsi & Komposisi'}</div>
+                <div className="text-xs text-gray-500">{purposeMap[c.chart_purpose] || 'Proporsi & Komposisi'}</div>
               </div>
             </div>
 
@@ -579,9 +465,7 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
                 <Tooltip />
                 <Legend />
                 <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label>
-                  {data.map((_entry: any, i: number) => (
-                    <Cell key={i} fill={chartColors[i % chartColors.length]} />
-                  ))}
+                  {data.map((_e: any, i: number) => <Cell key={i} fill={chartColors[i % chartColors.length]} />)}
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
@@ -593,22 +477,18 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
     });
   };
 
-  // === Legacy charts (analysis_summary.charts) ===
+  // ------------- Legacy charts fallback -------------
   const renderLegacyCharts = () => {
     const charts = analysisData?.charts;
     if (!charts || Object.keys(charts).length === 0) return null;
 
     return Object.entries(charts).map(([colName, cfg]: [string, any], idx) => {
       if (cfg.type === 'histogram') {
-        const data =
-          (cfg.bins || []).slice(0, -1).map((start: number, i: number) => {
-            const end = cfg.bins[i + 1];
-            const center = (Number(start) + Number(end)) / 2;
-            return {
-              bin: typeof center === 'number' ? center.toFixed(2) : String(center),
-              count: (cfg.counts || [])[i],
-            };
-          }) || [];
+        const data = (cfg.bins || []).slice(0, -1).map((start: number, i: number) => {
+          const end = cfg.bins[i + 1];
+          const center = (Number(start) + Number(end)) / 2;
+          return { bin: typeof center === 'number' ? center.toFixed(2) : String(center), count: (cfg.counts || [])[i] };
+        });
 
         return (
           <div key={idx} className="bg-white border rounded-lg p-4 shadow-sm">
@@ -617,9 +497,7 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
               <div>
                 <span className="font-medium">Distribusi {colName}</span>
                 {cfg.stats && (
-                  <div className="text-xs text-gray-500">
-                    Mean: {cfg.stats.mean?.toFixed(2)} | Median: {cfg.stats.median?.toFixed(2)}
-                  </div>
+                  <div className="text-xs text-gray-500">Mean: {cfg.stats.mean?.toFixed(2)} | Median: {cfg.stats.median?.toFixed(2)}</div>
                 )}
               </div>
             </div>
@@ -630,7 +508,7 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="count" fill="#8884d8" />
+                <Bar name={cfg.series_name || 'Frekuensi'} dataKey="count" fill="#8884d8" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -638,11 +516,7 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
       }
 
       if (cfg.type === 'bar') {
-        const data = (cfg.categories || []).map((cat: string, i: number) => ({
-          label: cat,
-          value: (cfg.counts || [])[i],
-        }));
-
+        const data = (cfg.categories || []).map((cat: string, i: number) => ({ label: cat, value: (cfg.counts || [])[i] }));
         return (
           <div key={idx} className="bg-white border rounded-lg p-4 shadow-sm">
             <div className="flex items-center space-x-2 mb-4">
@@ -661,10 +535,8 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
                 <YAxis type="category" dataKey="label" width={120} />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="value" fill="#82ca9d">
-                  {data.map((_d: any, i: number) => (
-                    <Cell key={i} fill={chartColors[i % chartColors.length]} />
-                  ))}
+                <Bar name={cfg.series_name || 'Jumlah'} dataKey="value" fill="#82ca9d">
+                  {data.map((_d: any, i: number) => <Cell key={i} fill={chartColors[i % chartColors.length]} />)}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -676,15 +548,12 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
     });
   };
 
-  // === Excel note (opsional ringkas) ===
+  // ------------- Excel header ringkas -------------
   const renderExcelHeader = () => {
     if (fileData?.type !== 'excel' && file_detection?.type !== 'excel') return null;
-    
-    // Try to get info from analysis_summary first, then from file_detection
     const totalSheets = analysis_summary?.total_sheets || file_detection?.sheet_count || 1;
     const totalRows = analysis_summary?.total_rows || 'N/A';
     const totalCols = analysis_summary?.total_columns || 'N/A';
-    
     return (
       <div className="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
         <h4 className="font-semibold text-emerald-900 mb-2 flex items-center space-x-2">
@@ -697,11 +566,6 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
       </div>
     );
   };
-
-  // === Empty state ===
-  const renderEmpty = () => (
-    <div className="text-sm text-gray-500 px-2">Tidak ada visualisasi yang dapat ditampilkan.</div>
-  );
 
   return (
     <div className="space-y-6">
@@ -717,21 +581,17 @@ const DataVisualization: React.FC<DataVisualizationProps> = ({ fileData }) => {
         </div>
       </div>
 
-      {/* File detection */}
       {renderFileDetection()}
-
-      {/* Excel overview (ringkas) */}
       {renderExcelHeader()}
-
-      {/* PDF stats */}
       {renderPDFStats()}
 
-      {/* Column types + Data quality */}
       {renderColumnTypes()}
       {renderDataQuality()}
 
-      {/* Intelligent charts (utama dari backend terbaru) */}
-      {renderIntelligentCharts() || renderLegacyCharts() || renderEmpty()}
+      {/* Charts utama (pakai output backend terbaru) atau fallback legacy */}
+      {renderIntelligentCharts() || renderLegacyCharts() || (
+        <div className="text-sm text-gray-500 px-2">Tidak ada visualisasi yang dapat ditampilkan.</div>
+      )}
     </div>
   );
 };

@@ -1,3 +1,4 @@
+// Chat.tsx
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -7,11 +8,24 @@ import { sendChatMessage } from '@/lib/api';
 import { ChatResponse } from '@/types';
 import LoadingSpinner from './LoadingSpinner';
 
+// >>> Markdown renderer
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+
+type SourceItem =
+  | string
+  | {
+      snippet?: string;
+      score?: number;
+      source?: string;
+      [k: string]: any;
+    };
+
 interface Message {
   id: string;
   text: string;
   sender: 'user' | 'bot';
-  sources?: string[];
+  sources?: SourceItem[];
 }
 
 interface ChatProps {
@@ -31,49 +45,28 @@ export default function Chat({ fileId, filename }: ChatProps) {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  useEffect(() => { scrollToBottom(); }, [messages]);
 
   const handleSendMessage = async () => {
     if (!inputText.trim() || isLoading) return;
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      text: inputText,
-      sender: 'user'
-    };
-
+    const userMessage: Message = { id: Date.now().toString(), text: inputText, sender: 'user' };
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
     setIsLoading(true);
 
     try {
-      const response: ChatResponse = await sendChatMessage({
-        message: inputText,
-        file_id: fileId
-      });
-
+      const response: ChatResponse = await sendChatMessage({ message: userMessage.text, file_id: fileId });
       const botMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: response.response,
-        sender: 'bot',
-        sources: response.sources
-      };
-
-      setMessages(prev => [...prev, botMessage]);
-    } catch (error: any) {
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: 'Sorry, I encountered an error processing your request. Please try again.',
+        text: response.response ?? response.answer ?? 'OK',
+        sources: response.sources as SourceItem[] | undefined,
         sender: 'bot'
       };
-
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages(prev => [...prev, botMessage]);
+    } catch {
+      setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), text: 'Sorry, I encountered an error processing your request. Please try again.', sender: 'bot' }]);
     } finally {
       setIsLoading(false);
     }
@@ -87,22 +80,14 @@ export default function Chat({ fileId, filename }: ChatProps) {
   };
 
   const suggestedQuestions = [
-    "What are the main insights from this data?",
-    "Can you summarize the key statistics?",
-    "What trends do you see in the data?",
-    "Are there any anomalies or outliers?"
+    'What are the main insights from this data?',
+    'Can you summarize the key statistics?',
+    'What trends do you see in the data?',
+    'Are there any anomalies or outliers?'
   ];
 
-  const handleSuggestedQuestion = (question: string) => {
-    setInputText(question);
-  };
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-4xl mx-auto p-6"
-    >
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-4xl mx-auto p-6">
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-4 text-white">
@@ -113,42 +98,43 @@ export default function Chat({ fileId, filename }: ChatProps) {
         {/* Messages */}
         <div className="h-96 overflow-y-auto p-4 space-y-4">
           <AnimatePresence>
-            {messages.map((message) => (
+            {messages.map((m) => (
               <motion.div
-                key={message.id}
+                key={m.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                <div className={`max-w-3xl flex items-start space-x-2 ${
-                  message.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''
-                }`}>
-                  <div className={`p-2 rounded-full ${
-                    message.sender === 'user' ? 'bg-blue-500' : 'bg-gray-500'
-                  }`}>
-                    {message.sender === 'user' ? (
-                      <User className="w-4 h-4 text-white" />
-                    ) : (
-                      <Bot className="w-4 h-4 text-white" />
-                    )}
+                <div className={`max-w-3xl flex items-start space-x-2 ${m.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                  <div className={`p-2 rounded-full ${m.sender === 'user' ? 'bg-blue-500' : 'bg-gray-500'}`}>
+                    {m.sender === 'user' ? <User className="w-4 h-4 text-white" /> : <Bot className="w-4 h-4 text-white" />}
                   </div>
-                  
-                  <div className={`rounded-lg p-3 ${
-                    message.sender === 'user'
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    <p className="whitespace-pre-wrap">{message.text}</p>
-                    
-                    {message.sources && message.sources.length > 0 && (
+
+                  <div className={`${m.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'} rounded-lg p-3`}>
+                    {/* Markdown render: bold, list, table, dsb. */}
+                    <div className="prose prose-sm max-w-none prose-headings:mt-2 prose-p:my-1">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {m.text}
+                      </ReactMarkdown>
+                    </div>
+
+                    {m.sources && m.sources.length > 0 && (
                       <div className="mt-3 pt-3 border-t border-gray-300">
                         <p className="text-xs text-gray-600 mb-2">Sources:</p>
-                        {message.sources.map((source, idx) => (
-                          <div key={idx} className="text-xs bg-gray-50 p-2 rounded mb-1">
-                            {source}
-                          </div>
-                        ))}
+                        {m.sources.map((src, idx) => {
+                          if (typeof src === 'string') {
+                            return <div key={idx} className="text-xs bg-gray-50 p-2 rounded mb-1">{src}</div>;
+                          }
+                          const s = src as any;
+                          return (
+                            <div key={idx} className="text-xs bg-gray-50 p-2 rounded mb-1">
+                              <div>{s.snippet ?? JSON.stringify(s)}</div>
+                              {typeof s.score === 'number' && <div className="text-[10px] text-gray-500">score: {s.score.toFixed(3)}</div>}
+                              {!!s.source && <div className="text-[10px] text-gray-500">source: {String(s.source)}</div>}
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -156,24 +142,15 @@ export default function Chat({ fileId, filename }: ChatProps) {
               </motion.div>
             ))}
           </AnimatePresence>
-          
+
           {isLoading && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex justify-start"
-            >
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex justify-start">
               <div className="flex items-start space-x-2">
-                <div className="p-2 rounded-full bg-gray-500">
-                  <Bot className="w-4 h-4 text-white" />
-                </div>
-                <div className="bg-gray-100 rounded-lg p-3">
-                  <LoadingSpinner />
-                </div>
+                <div className="p-2 rounded-full bg-gray-500"><Bot className="w-4 h-4 text-white" /></div>
+                <div className="bg-gray-100 rounded-lg p-3"><LoadingSpinner /></div>
               </div>
             </motion.div>
           )}
-          
           <div ref={messagesEndRef} />
         </div>
 
@@ -182,13 +159,13 @@ export default function Chat({ fileId, filename }: ChatProps) {
           <div className="p-4 border-t bg-gray-50">
             <p className="text-sm text-gray-600 mb-2">Try asking:</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {suggestedQuestions.map((question, idx) => (
+              {suggestedQuestions.map((q, i) => (
                 <button
-                  key={idx}
-                  onClick={() => handleSuggestedQuestion(question)}
+                  key={i}
+                  onClick={() => setInputText(q)}
                   className="text-left p-2 text-sm bg-white border border-gray-200 rounded hover:bg-blue-50 hover:border-blue-300 transition-colors"
                 >
-                  {question}
+                  {q}
                 </button>
               ))}
             </div>
@@ -201,7 +178,7 @@ export default function Chat({ fileId, filename }: ChatProps) {
             <textarea
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyPress}
               placeholder="Ask me anything about your data..."
               className="flex-1 p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows={2}

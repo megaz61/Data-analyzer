@@ -1,339 +1,213 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-import os
-import tempfile
+# app/main.py
+from __future__ import annotations
+import io, os, uuid
+from typing import List, Dict, Any
+from pathlib import Path
 from dotenv import load_dotenv
-import numpy as np # Tambahkan import numpy
 
-# Import from correct paths
-from app.models.schemas import FileUploadResponse, ChatMessage, ChatResponse
-from app.services.file_processor import EnhancedFileProcessor
+# load .env seawal mungkin (sebelum import service yang baca ENV)
+ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(ROOT / ".env", override=True)
+
+import pandas as pd
+from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+
+from app.models.schemas import FileUploadResponse, ChatRequest, ChatResponse, ProcessedFile
+from app.services.data_analyzer import DataAnalyzer
 from app.services.rag_service import GeminiRAGService
 
-# Load environment variables
-load_dotenv()
-
-# Fungsi utilitas untuk mengkonversi tipe data NumPy ke Python
-def convert_numpy_types(data):
-    """Recursively convert numpy types to native Python types."""
-    if isinstance(data, dict):
-        return {k: convert_numpy_types(v) for k, v in data.items()}
-    elif isinstance(data, list):
-        return [convert_numpy_types(i) for i in data]
-    elif isinstance(data, np.int64):
-        return int(data)
-    elif isinstance(data, np.float64):
-        return float(data)
-    elif isinstance(data, (np.ndarray, np.generic)):
-        # Convert NumPy arrays and other types to lists or appropriate Python types
-        return data.tolist()
-    return data
-
-app = FastAPI(title="Enhanced AI Data Analysis API", version="2.0.0")
-
-# CORS middleware
-CORS_ORIGINS = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(',')
+app = FastAPI(title="AI Data Assistant Backend", version="1.3.0")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=CORS_ORIGINS,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=os.getenv("CORS_ORIGINS", "*").split(","),
+    allow_credentials=True, allow_methods=["*"], allow_headers=["*"],
 )
 
-# Initialize enhanced services
-file_processor = EnhancedFileProcessor()
-processed_files = {}
+analyzer = DataAnalyzer()
+rag = GeminiRAGService()  # punya rag.model (Gemini) & embedder
+PROCESSED_FILES: Dict[str, ProcessedFile] = {}
 
-# Initialize RAG service
-try:
-    rag_service = GeminiRAGService()
-    RAG_AVAILABLE = True
-    print("✅ RAG Service initialized successfully with Gemini")
-except Exception as e:
-    print(f"❌ RAG Service initialization failed: {e}")
-    print("Chat functionality will be limited to basic analysis")
-    rag_service = None
-    RAG_AVAILABLE = False
+def _gen_id() -> str: return uuid.uuid4().hex
+def _safe_text(b: bytes) -> str:
+    try: return b.decode("utf-8", errors="ignore")
+    except Exception: return ""
 
-@app.get("/")
-async def root():
-    model_name = os.getenv("GEMINI_MODEL_NAME", "gemini-1.5-flash")
-    return {
-        "message": "Enhanced AI Data Analysis API is running",
-        "status": "healthy",
-        "version": "2.0.0",
-        "model": model_name,
-        "supported_formats": [".csv", ".xlsx", ".xls", ".pdf"],
-        "features": [
-            "Enhanced file type detection",
-            "Advanced column type analysis",
-            "Data quality assessment",
-            "PDF document statistics & AI summarization",
-            "RAG-powered chat interface"
-        ]
-    }
+# ------- Robust PDF text extraction -------
+def _extract_pdf_pages_as_text(content: bytes) -> List[str]:
+    try:
+        import pdfplumber
+        with pdfplumber.open(io.BytesIO(content)) as pdf:
+            pages = [(p.extract_text() or "") for p in pdf.pages]
+        if any(pages): return pages
+    except Exception:
+        pass
+    try:
+        from pypdf import PdfReader
+        r = PdfReader(io.BytesIO(content))
+        pages = [(p.extract_text() or "") for p in r.pages]
+        if any(pages): return pages
+    except Exception:
+        pass
+    try:
+        import PyPDF2
+        r = PyPDF2.PdfReader(io.BytesIO(content))
+        pages = [(p.extract_text() or "") for p in r.pages]
+        if any(pages): return pages
+    except Exception:
+        pass
+    raise HTTPException(status_code=500, detail="Unable to extract text from PDF")
 
-@app.get("/health")
-async def health_check():
-    model_name = os.getenv("GEMINI_MODEL_NAME", "gemini-1.5-flash")
-    return {
-        "status": "healthy",
-        "gemini_configured": bool(os.getenv("GEMINI_API_KEY")),
-        "rag_available": RAG_AVAILABLE,
-        "model_info": {
-            "llm_model": model_name,
-            "embedding_model": os.getenv("GEMINI_EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2"),
-            "provider": "Google Gemini"
-        },
-        "services": {
-            "file_processor": "ready",
-            "rag_service": "ready" if RAG_AVAILABLE else "not available"
-        },
-        "supported_formats": file_processor.supported_formats,
-        "new_features": {
-            "file_detection": "Enhanced file type and structure detection",
-            "column_analysis": "Automatic column type detection with confidence scores",
-            "data_quality": "Comprehensive data quality assessment",
-            "pdf_analysis": "Detailed PDF statistics with AI-powered summarization"
-        }
-    }
+@app.get("/", include_in_schema=False)
+def root(): return {"ok": True}
 
+# ===================== UPLOAD =====================
 @app.post("/upload", response_model=FileUploadResponse)
-async def upload_file(file: UploadFile = File(...)):
-    """Enhanced file upload and processing with detailed analysis"""
-    try:
-        if not file.filename:
-            raise HTTPException(status_code=400, detail="No file selected")
+async def upload(file: UploadFile = File(...)):
+    if not file or not file.filename:
+        raise HTTPException(status_code=400, detail="No file uploaded")
 
-        file_ext = os.path.splitext(file.filename)[1].lower()
-        if file_ext not in file_processor.supported_formats:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Unsupported file format: {file_ext}. Supported formats: {', '.join(file_processor.supported_formats)}"
-            )
+    file_id = _gen_id()
+    name = file.filename
+    lower = name.lower()
+    content = await file.read()
 
-        print(f"Processing enhanced file: {file.filename} ({file_ext})")
+    # ---- CSV ----
+    if lower.endswith(".csv") or file.content_type in ("text/csv",):
+        df = pd.read_csv(io.BytesIO(content))
+        analysis = analyzer.analyze_dataframe(df)
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix=file_ext) as tmp_file:
-            content = await file.read()
-            tmp_file.write(content)
-            tmp_path = tmp_file.name
+        preview_csv = df.head(200).to_csv(index=False)
+        rag.create_vector_store(file_id, {
+            "type": "csv",
+            "text_chunks": [f"Columns: {', '.join(df.columns.astype(str))}", preview_csv]
+        })
 
-        try:
-            file_data = file_processor.process_file(tmp_path, file.filename)
-            print(f"File processed successfully with enhanced features: {file_data['file_id']}")
-            
-            # Tambahkan konversi tipe data NumPy
-            cleaned_file_data = convert_numpy_types(file_data)
-            
-            if RAG_AVAILABLE and rag_service:
-                try:
-                    file_id = rag_service.create_vector_store(cleaned_file_data)
-                    cleaned_file_data["rag_available"] = True
-                    print(f"✅ RAG vector store created: {file_id}")
-                except Exception as e:
-                    print(f"⚠️ RAG processing failed: {e}")
-                    cleaned_file_data["rag_available"] = False
-            else:
-                cleaned_file_data["rag_available"] = False
-
-            file_id = cleaned_file_data['file_id']
-            processed_files[file_id] = cleaned_file_data
-
-            return FileUploadResponse(
-                filename=file.filename,
-                file_id=file_id,
-                message="File processed successfully with enhanced analysis",
-                analysis_summary=cleaned_file_data.get('analysis_summary', {}),
-                file_detection=cleaned_file_data.get('file_detection', {}),
-                processing_info=cleaned_file_data.get('processing_info', {})
-            )
-
-        finally:
-            try:
-                os.unlink(tmp_path)
-            except:
-                pass
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"Upload error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Enhanced upload failed: {str(e)}")
-
-@app.post("/chat", response_model=ChatResponse)
-async def chat(chat_message: ChatMessage):
-    """Enhanced chat with AI about uploaded data"""
-    try:
-        if not chat_message.file_id:
-            raise HTTPException(status_code=400, detail="file_id is required")
-
-        if chat_message.file_id not in processed_files:
-            raise HTTPException(status_code=404, detail="File not found")
-
-        if not RAG_AVAILABLE or not rag_service:
-            file_data = processed_files[chat_message.file_id]
-            basic_info = f"""RAG service tidak tersedia. Namun, saya dapat memberikan informasi dasar tentang file '{file_data['filename']}':
-
-📊 Informasi File:
-- Tipe: {file_data.get('type', 'Unknown').upper()}
-- Status: Berhasil diproses dengan analisis enhanced
-
-"""
-            analysis = file_data.get('analysis_summary', {})
-            if file_data.get('type') == 'csv':
-                if 'shape' in analysis:
-                    basic_info += f"- Dimensi: {analysis['shape'][0]} baris, {analysis['shape'][1]} kolom\n"
-                if 'data_quality' in analysis:
-                    basic_info += f"- Skor Kualitas Data: {analysis['data_quality'].get('data_quality_score', 'N/A')}/100\n"
-            elif file_data.get('type') == 'pdf':
-                if 'pages' in analysis:
-                    basic_info += f"- Halaman: {analysis['pages']}\n"
-                if 'word_count' in analysis:
-                    basic_info += f"- Jumlah Kata: {analysis['word_count']:,}\n"
-
-            basic_info += "\nUntuk analisis mendalam, pastikan RAG service aktif."
-
-            return ChatResponse(
-                response=basic_info,
-                sources=[]
-            )
-
-        result = rag_service.query(chat_message.file_id, chat_message.message)
-        return ChatResponse(
-            response=result["response"],
-            sources=result["sources"]
+        resp = FileUploadResponse(
+            file_id=file_id, filename=name, type="csv", analysis_summary=analysis,
+            processing_info={"rows": int(df.shape[0]), "cols": int(df.shape[1]), "vector_store_id": f"vs-{file_id}"}
         )
 
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"Chat error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Enhanced chat failed: {str(e)}")
+    # ---- Excel ----
+    elif lower.endswith((".xlsx", ".xls")) or file.content_type in (
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","application/vnd.ms-excel"):
+        df = pd.read_excel(io.BytesIO(content))
+        analysis = analyzer.analyze_dataframe(df)
 
-@app.get("/file/{file_id}")
-async def get_file_info(file_id: str):
-    """Get enhanced file information"""
-    if file_id not in processed_files:
-        raise HTTPException(status_code=404, detail="File not found")
-    
-    # Ambil data yang sudah bersih dari tipe NumPy
-    file_data = processed_files[file_id]
-    model_name = os.getenv("GEMINI_MODEL_NAME", "gemini-1.5-flash")
+        preview_csv = df.head(200).to_csv(index=False)
+        rag.create_vector_store(file_id, {
+            "type": "excel",
+            "text_chunks": [f"Columns: {', '.join(df.columns.astype(str))}", preview_csv]
+        })
 
-    return {
-        "file_id": file_id,
-        "filename": file_data["filename"],
-        "type": file_data["type"],
-        "analysis_summary": file_data.get("analysis_summary", {}),
-        "file_detection": file_data.get("file_detection", {}),
-        "processing_info": file_data.get("processing_info", {}),
-        "processed_at": file_data.get("processed_at"),
-        "rag_available": file_data.get("rag_available", False),
-        "model_info": model_name,
-        "enhanced_features": {
-            "column_type_detection": "column_types" in file_data.get("analysis_summary", {}),
-            "data_quality_assessment": "data_quality" in file_data.get("analysis_summary", {}),
-            "ai_summary": "ai_summary" in file_data.get("analysis_summary", {}),
-            "detailed_statistics": True
+        resp = FileUploadResponse(
+            file_id=file_id, filename=name, type="excel", analysis_summary=analysis,
+            processing_info={"rows": int(df.shape[0]), "cols": int(df.shape[1]), "vector_store_id": f"vs-{file_id}"}
+        )
+
+    # ---- PDF (dengan summary, metadata, extraction_info) ----
+    elif lower.endswith(".pdf") or file.content_type in ("application/pdf",):
+        # 1) Extract text per halaman
+        pages_text = _extract_pdf_pages_as_text(content)
+        full_text = "\n".join(pages_text)
+
+        # 2) Info per halaman & total halaman
+        page_infos = [{"word_count": len((p or "").split())} for p in pages_text]
+        total_pages = int(len(pages_text))
+        pages_with_text = int(sum(1 for p in page_infos if p.get("word_count", 0) > 0))
+
+        # 3) Metadata
+        file_size_bytes = len(content)
+        metadata = {
+            "type": "pdf",
+            "pages": total_pages,
+            "file_size_bytes": file_size_bytes,
+            "file_size_mb": round(file_size_bytes / (1024 * 1024), 2),
+            "extractable": total_pages > 0,
         }
-    }
-    
-@app.get("/files")
-async def list_files():
-    """List all processed files with enhanced info"""
-    return {
-        "files": [
-            {
-                "file_id": file_id,
-                "filename": data["filename"],
-                "type": data["type"],
-                "processed_at": data.get("processed_at"),
-                "file_size_mb": data.get("file_detection", {}).get("size_mb", 0),
-                "rag_available": data.get("rag_available", False),
-                "has_enhanced_analysis": "analysis_summary" in data,
-                "quality_score": data.get("analysis_summary", {}).get("data_quality", {}).get("data_quality_score"),
-            }
-            for file_id, data in processed_files.items()
-        ],
-        "total_files": len(processed_files),
-        "supported_formats": file_processor.supported_formats
-    }
 
-@app.get("/file/{file_id}/detection")
-async def get_file_detection(file_id: str):
-    """Get detailed file detection information"""
-    if file_id not in processed_files:
-        raise HTTPException(status_code=404, detail="File not found")
+        # 4) Ringkasan pada upload (bisa OFF via PDF_SUMMARY_ON_UPLOAD=0)
+        do_summary = os.getenv("PDF_SUMMARY_ON_UPLOAD", "1") != "0"
+        pdf_result = analyzer.analyze_pdf(
+            full_text=full_text,
+            page_texts=page_infos,
+            metadata=metadata,
+            gemini_model=rag.model if do_summary else None,
+            do_summary=do_summary,
+        )
 
-    file_data = processed_files[file_id]
-    return {
-        "file_id": file_id,
-        "filename": file_data["filename"],
-        "file_detection": file_data.get("file_detection", {}),
-        "supported": file_data.get("file_detection", {}).get("is_supported", False)
-    }
+        # Pastikan field alias yang dibutuhkan UI terisi (hindari N/A)
+        pdf_result.setdefault("pages", total_pages)
+        pdf_result.setdefault("page_count", total_pages)
+        pdf_result.setdefault("metadata", metadata)
+        if "extraction_info" not in pdf_result:
+            pdf_result["extraction_info"] = {}
+        pdf_result["extraction_info"].update({
+            "pages_with_text": pages_with_text,
+            "total_pages": total_pages,     # dipakai sebagian UI
+            "pages_total": total_pages,     # alias lain
+            "success_rate": round((pages_with_text / max(1, total_pages)) * 100, 1),
+        })
 
-@app.get("/file/{file_id}/quality")
-async def get_data_quality(file_id: str):
-    """Get detailed data quality assessment"""
-    if file_id not in processed_files:
-        raise HTTPException(status_code=404, detail="File not found")
+        # 5) Vector store (chunk pendek agar hemat)
+        chunks = [ (t or "").strip().replace("\r", "").replace("\n\n", "\n")[:800] for t in pages_text ]
+        chunks = [c for c in chunks if c][:60]
+        rag.create_vector_store(file_id, {"type": "pdf", "text_chunks": chunks})
 
-    file_data = processed_files[file_id]
-    analysis = file_data.get("analysis_summary", {})
+        # 6) Response
+        resp = FileUploadResponse(
+            file_id=file_id, filename=name, type="pdf",
+            analysis_summary=pdf_result,
+            preview={"first_1000_chars": full_text[:1000]},
+            processing_info={"pages": total_pages, "vector_store_id": f"vs-{file_id}"},
+        )
 
-    if "data_quality" not in analysis:
-        raise HTTPException(status_code=404, detail="Data quality assessment not available for this file type")
+    # ---- TXT / lainnya ----
+    else:
+        text = _safe_text(content)
+        stats = analyzer._pdf_statistics(text, [{"word_count": len(text.split())}])
+        chunks = [text[i:i+700] for i in range(0, min(len(text), 35000), 700)]
+        rag.create_vector_store(file_id, {"type": "txt", "text_chunks": chunks})
 
-    return {
-        "file_id": file_id,
-        "filename": file_data["filename"],
-        "data_quality": analysis["data_quality"],
-        "column_types": analysis.get("column_types", {}),
-        "recommendations": {
-            "high_null_columns": "Consider removing or imputing columns with >50% missing data",
-            "duplicates": "Review and remove duplicate rows if appropriate",
-            "data_types": "Verify detected column types match your expectations"
-        }
-    }
+        resp = FileUploadResponse(
+            file_id=file_id, filename=name, type="txt", analysis_summary=stats,
+            preview={"first_1000_chars": text[:1000]},
+            processing_info={"chars": len(text), "vector_store_id": f"vs-{file_id}"},
+        )
 
-@app.get("/model-info")
-async def get_model_info():
-    """Get current model information with enhanced features"""
-    model_name = os.getenv("GEMINI_MODEL_NAME", "gemini-1.5-flash")
-    return {
-        "llm_model": model_name,
-        "embedding_model": os.getenv("GEMINI_EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2"),
-        "provider": "Google Gemini",
-        "model_url": f"https://ai.google.dev/models/{model_name}",
-        "api_version": "2.0.0",
-        "supported_file_types": file_processor.supported_formats,
-        "capabilities": [
-            "Enhanced file type detection",
-            "Advanced column type analysis",
-            "Data quality assessment",
-            "PDF document statistics",
-            "AI-powered PDF summarization",
-            "Indonesian language support",
-            "Question answering with RAG",
-            "Interactive data visualization",
-            "Multi-sheet Excel analysis"
-        ],
-        "new_features": [
-            "Automatic encoding detection for CSV files",
-            "Confidence scores for column type detection",
-            "Comprehensive data quality metrics",
-            "PDF reading time estimation",
-            "Email, URL, phone number detection",
-            "Boolean and categorical data recognition"
-        ]
-    }
+    PROCESSED_FILES[file_id] = ProcessedFile(
+        file_id=resp.file_id, filename=resp.filename, type=resp.type,
+        analysis_summary=resp.analysis_summary,
+        vector_store_id=resp.processing_info.get("vector_store_id"),
+        processing_info=resp.processing_info,
+    )
+    return resp
 
-if __name__ == "__main__":
-    import uvicorn
-    print("🚀 Starting Enhanced AI Data Analysis API v2.0.0")
-    print(f"📊 Supported formats: {file_processor.supported_formats}")
-    print("🔧 Enhanced features: File detection, Column analysis, Data quality, PDF summarization")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+# ===================== CHAT =====================
+async def _chat_core(req: ChatRequest) -> ChatResponse:
+    if req.file_id not in PROCESSED_FILES:
+        raise HTTPException(status_code=404, detail="file_id not found")
+    pack = rag.chat(
+        file_id=req.file_id,
+        user_message=req.user_message,
+        top_k=max(1, min(req.top_k or 3, 5)),  # hemat
+    )
+    return ChatResponse(
+        answer=pack.get("answer"),
+        sources=pack.get("sources"),
+        used_top_k=pack.get("used_top_k"),
+        model=pack.get("model"),
+    )
+
+@app.post("/api/chat", response_model=ChatResponse)
+async def chat_api(req: ChatRequest): return await _chat_core(req)
+
+@app.post("/chat", response_model=ChatResponse)
+async def chat_alias(req: ChatRequest): return await _chat_core(req)
+
+# ===================== FILE GET =====================
+@app.get("/file/{file_id}", response_model=ProcessedFile)
+async def get_file(file_id: str):
+    file = PROCESSED_FILES.get(file_id)
+    if not file: raise HTTPException(status_code=404, detail="file not found")
+    return file
