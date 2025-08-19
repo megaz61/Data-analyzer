@@ -41,7 +41,7 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
        width="450">
 </div>
 
-```
+```markdown
 
 ## ✨ Key Features
 
