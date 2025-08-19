@@ -7,30 +7,29 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
 ---
 
 ```markdown
+
 ## 🖼️ Images
 
 > **📁 [Lihat semua gambar dalam resolusi penuh di Google Drive](https://drive.google.com/drive/folders/1GJEoxP_fvslCKBELYZ0eBUp1vTCo008i?usp=sharing)**
 
 ### Chat Interface
-<p align="center"> 
-   <a href="https://drive.google.com/uc?export=view&id=1iw5p7oU6DiuP3Js0PLPDyLYTqPwenvZ5">
-        <img src="https://drive.google.com/uc?export=view&id=1iw5p7oU6DiuP3Js0PLPDyLYTqPwenvZ5"
+<p align="center">
+    <a href="./images/chat-interface.png">
+        <img src="./images/chat-interface.png"
              alt="Chat Interface" width="900" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-   </a>
+    </a>
 </p>
 
 ### Dashboard & Analytics
 <div align="center">
-  
+    
 | Home Dashboard | CSV Data Analysis |
 |:---:|:---:|
-| <a href="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M"><img src="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M" alt="Dashboard" height="300" style="border-radius: 6px;"></a> | <a href="https://drive.google.com/uc?export=view&id=1dAp26euPKGcJXgl7nhj4wyDVk-JgQ3ZV"><img src="https://drive.google.com/uc?export=view&id=1dAp26euPKGcJXgl7nhj4wyDVk-JgQ3ZV" alt="CSV Analysis 1" height="300" style="border-radius: 6px;"></a> |
+| <a href="./images/home-dashboard.png"><img src="./images/home-dashboard.png" alt="Dashboard" height="300" style="border-radius: 6px;"></a> | <a href="./images/csv-analysis-1.png"><img src="./images/csv-analysis-1.png" alt="CSV Analysis 1" height="300" style="border-radius: 6px;"></a> |
 | **Data Visualization** | **Report Generation** |
-| <a href="https://drive.google.com/uc?export=view&id=1e3MxrKZ8dKmZ-iDqJv-4wyrvCjl38hbr"><img src="https://drive.google.com/uc?export=view&id=1e3MxrKZ8dKmZ-iDqJv-4wyrvCjl38hbr" alt="CSV Analysis 2" height="300" style="border-radius: 6px;"></a> | <a href="https://drive.google.com/uc?export=view&id=1C4sOxybPa_9-mr1eo-rdX4yyDkzqqHIs"><img src="https://drive.google.com/uc?export=view&id=1C4sOxybPa_9-mr1eo-rdX4yyDkzqqHIs" alt="Report" height="300" style="border-radius: 6px;"></a> |
+| <a href="./images/csv-analysis-2.png"><img src="./images/csv-analysis-2.png" alt="CSV Analysis 2" height="300" style="border-radius: 6px;"></a> | <a href="./images/report.png"><img src="./images/report.png" alt="Report" height="300" style="border-radius: 6px;"></a> |
 
 </div>
-
----
 ```
 
 
