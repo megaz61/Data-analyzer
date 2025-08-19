@@ -23,17 +23,17 @@ The heart of our application - intelligent document Q&A with contextual response
 Comprehensive statistical analysis and insights from uploaded CSV files.
 <div align="center">
 Basic Statistics & Data Overview
-<img src="Result and Example_dataset/Result/descriptive-result-csv1.png" 
+<img src="Result and Example_dataset/Result/descriptive-result-csv1.jpg" 
   alt="CSV Analysis - Basic Statistics" 
   width="700" 
   style="border-radius: 6px; margin: 10px;">
 Data Quality & Distribution Analysis
-<img src="Result and Example_dataset/Result/descriptive-result-csv2.png" 
+<img src="Result and Example_dataset/Result/descriptive-result-csv2.jpg" 
   alt="CSV Analysis - Data Quality" 
   width="700" 
   style="border-radius: 6px; margin: 10px;">
 Advanced Analytics & Insights
-<img src="Result and Example_dataset/Result/descriptive-result-csv3.png" 
+<img src="Result and Example_dataset/Result/descriptive-result-csv3.jpg" 
   alt="CSV Analysis - Advanced Analytics" 
   width="700" 
   style="border-radius: 6px; margin: 10px;">
