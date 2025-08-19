@@ -3,12 +3,10 @@
 **Data Assistant** is a web app that helps you understand **PDF / CSV / Excel** without writing code.  
 Upload a file → get **automatic summaries**, **data quality checks**, **chart suggestions**, and **ask anything** about the document via AI.
 
-> Goal: let non-technical users “talk” to their data—fast.
+> Goal: let non-technical users "talk" to their data—fast.
+
 ---
 
-```markdown
-
-```
 ## 🖼️ Screenshots & Demo
 
 ### 🤖 AI Chat Assistant
@@ -41,7 +39,7 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
        width="450">
 </div>
 
-```markdown
+---
 
 ## ✨ Key Features
 
@@ -53,7 +51,7 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
 - 📈 **Smart Chart Suggestions**  
   Histogram, Bar, Line/Area, Scatter, Pie — chosen automatically based on data patterns.
 - 💬 **AI Chat (RAG)**  
-  Answers are grounded in **your document’s content** (not hallucinated).
+  Answers are grounded in **your document's content** (not hallucinated).
 
 ---
 
@@ -82,12 +80,9 @@ Used for:
 - **PDF summarization** → stored at `analysis_summary.ai_summary`  
 - **Chat responses** → grounded with retrieved context
 
-```markdown
-
-
 ---
 
-## 📦 Project Structure (compact)
+## 📦 Project Structure
 
 ```
 data-assistant/
@@ -240,8 +235,6 @@ curl -X POST "http://localhost:8000/upload" \
   Ensure `recharts` is installed and components wait for data readiness.
 - **CORS errors**  
   Add `http://localhost:3000` (or your domain) to `CORS_ORIGINS`.
-
----
 
 ---
 
