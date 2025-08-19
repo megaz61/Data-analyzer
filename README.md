@@ -6,45 +6,32 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
 > Goal: let non-technical users “talk” to their data—fast.
 ---
 
+```markdown
 ## 🖼️ Images
+
+> **📁 [Lihat semua gambar dalam resolusi penuh di Google Drive](https://drive.google.com/drive/folders/1GJEoxP_fvslCKBELYZ0eBUp1vTCo008i?usp=sharing)**
+
+### Chat Interface
 <p align="center"> 
    <a href="https://drive.google.com/uc?export=view&id=1iw5p7oU6DiuP3Js0PLPDyLYTqPwenvZ5">
         <img src="https://drive.google.com/uc?export=view&id=1iw5p7oU6DiuP3Js0PLPDyLYTqPwenvZ5"
-             alt="chat" width="960">
-      </a>
+             alt="Chat Interface" width="900" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+   </a>
 </p>
 
-<table align="center">
-  <tr>
-    <td align="center" width="50%">
-      <a href="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M">
-    <img src="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M"
-         alt="Tampilan Halaman Beranda" width="440">
-  </a>
-    </td>
-    <td align="center" width="50%">
-      <a href="https://drive.google.com/uc?export=view&id=1dAp26euPKGcJXgl7nhj4wyDVk-JgQ3ZV">
-        <img src="https://drive.google.com/uc?export=view&id=1dAp26euPKGcJXgl7nhj4wyDVk-JgQ3ZV"
-             alt="csv 1" width="440">
-      </a>
-    </td>
-  </tr>
-    <tr>
-    <td align="center" width="50%">
-      <a href="https://drive.google.com/uc?export=view&id=1e3MxrKZ8dKmZ-iDqJv-4wyrvCjl38hbr">
-    <img src="https://drive.google.com/uc?export=view&id=1e3MxrKZ8dKmZ-iDqJv-4wyrvCjl38hbr"
-         alt="csv 2" width="440">
-  </a>
-    </td>
-    <td align="center" width="50%">
-      <a href="https://drive.google.com/uc?export=view&id=1C4sOxybPa_9-mr1eo-rdX4yyDkzqqHIs">
-        <img src="https://drive.google.com/uc?export=view&id=1C4sOxybPa_9-mr1eo-rdX4yyDkzqqHIs"
-             alt="csv 3" width="440">
-      </a>
-    </td>
-  </tr>
-</table>
+### Dashboard & Analytics
+<div align="center">
+  
+| Home Dashboard | CSV Data Analysis |
+|:---:|:---:|
+| <a href="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M"><img src="https://drive.google.com/uc?export=view&id=1t7h7Zt0MShJrA1HGE3WBfsTpkEGzxm_M" alt="Dashboard" height="300" style="border-radius: 6px;"></a> | <a href="https://drive.google.com/uc?export=view&id=1dAp26euPKGcJXgl7nhj4wyDVk-JgQ3ZV"><img src="https://drive.google.com/uc?export=view&id=1dAp26euPKGcJXgl7nhj4wyDVk-JgQ3ZV" alt="CSV Analysis 1" height="300" style="border-radius: 6px;"></a> |
+| **Data Visualization** | **Report Generation** |
+| <a href="https://drive.google.com/uc?export=view&id=1e3MxrKZ8dKmZ-iDqJv-4wyrvCjl38hbr"><img src="https://drive.google.com/uc?export=view&id=1e3MxrKZ8dKmZ-iDqJv-4wyrvCjl38hbr" alt="CSV Analysis 2" height="300" style="border-radius: 6px;"></a> | <a href="https://drive.google.com/uc?export=view&id=1C4sOxybPa_9-mr1eo-rdX4yyDkzqqHIs"><img src="https://drive.google.com/uc?export=view&id=1C4sOxybPa_9-mr1eo-rdX4yyDkzqqHIs" alt="Report" height="300" style="border-radius: 6px;"></a> |
+
+</div>
+
 ---
+```
 
 
 ## ✨ Key Features
