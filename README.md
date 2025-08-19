@@ -8,7 +8,7 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
 
 ```markdown
 
-```
+```markdown
 ## 🖼️ Screenshots & Demo
 
 ### 🤖 AI Chat Assistant
@@ -82,7 +82,7 @@ Used for:
 - **PDF summarization** → stored at `analysis_summary.ai_summary`  
 - **Chat responses** → grounded with retrieved context
 
----
+```markdown
 
 
 ---
