@@ -7,10 +7,10 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
 ---
 
 ## 🖼️ Images
-<p align="center">
-   <a href="https://drive.google.com/uc?export=view&id=1BoU-OBqUZt7Q9yyj7u1YsfGLOTFl7oMH">
-        <img src="https://drive.google.com/uc?export=view&id=1BoU-OBqUZt7Q9yyj7u1YsfGLOTFl7oMH"
-             alt="Tampilan Fitur AI Chatbot 2" width="960">
+<p align="center"> 
+   <a href="https://drive.google.com/uc?export=view&id=1iw5p7oU6DiuP3Js0PLPDyLYTqPwenvZ5">
+        <img src="https://drive.google.com/uc?export=view&id=1iw5p7oU6DiuP3Js0PLPDyLYTqPwenvZ5"
+             alt="chat" width="960">
       </a>
 </p>
 
@@ -23,22 +23,29 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
   </a>
     </td>
     <td align="center" width="50%">
-      <a href="https://drive.google.com/uc?export=view&id=1XyoxyeH_MFBgkHm7QKJ1ySf_bkHuDMIn">
-        <img src="https://drive.google.com/uc?export=view&id=1XyoxyeH_MFBgkHm7QKJ1ySf_bkHuDMIn"
-             alt="Tampilan Halaman AI Chatbot 1" width="440">
+      <a href="https://drive.google.com/uc?export=view&id=1dAp26euPKGcJXgl7nhj4wyDVk-JgQ3ZV">
+        <img src="https://drive.google.com/uc?export=view&id=1dAp26euPKGcJXgl7nhj4wyDVk-JgQ3ZV"
+             alt="csv 1" width="440">
       </a>
     </td>
   </tr>
-  <tr>
-  <td colspan="2" align="center">
-        <a href="https://drive.google.com/uc?export=view&id=1A9ioqL6OIZ37Y-aklEs7kXQ7BiTSUk9L">
-        <img src="https://drive.google.com/uc?export=view&id=1A9ioqL6OIZ37Y-aklEs7kXQ7BiTSUk9L"
-             alt="Tampilan Fitur AI Chatbot 2" width="440">
+    <tr>
+    <td align="center" width="50%">
+      <a href="https://drive.google.com/uc?export=view&id=1e3MxrKZ8dKmZ-iDqJv-4wyrvCjl38hbr">
+    <img src="https://drive.google.com/uc?export=view&id=1e3MxrKZ8dKmZ-iDqJv-4wyrvCjl38hbr"
+         alt="csv 2" width="440">
+  </a>
+    </td>
+    <td align="center" width="50%">
+      <a href="https://drive.google.com/uc?export=view&id=1C4sOxybPa_9-mr1eo-rdX4yyDkzqqHIs">
+        <img src="https://drive.google.com/uc?export=view&id=1C4sOxybPa_9-mr1eo-rdX4yyDkzqqHIs"
+             alt="csv 3" width="440">
       </a>
-  </td>
+    </td>
   </tr>
 </table>
 ---
+
 
 ## ✨ Key Features
 
