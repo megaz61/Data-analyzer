@@ -9,53 +9,38 @@ Upload a file → get **automatic summaries**, **data quality checks**, **chart 
 ```markdown
 
 ```
-🖼️ Screenshots & Results
-🤖 AI Chat Assistant
-The heart of our application - intelligent document Q&A with contextual responses.
+## 🖼️ Screenshots & Demo
+
+### 🤖 AI Chat Assistant
 <div align="center">
   <img src="Result and Example_dataset/Result/chat-assistData.png" 
        alt="AI Chat Assistant Interface" 
-       width="800" 
-       style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+       width="500">
 </div>
 
-📊 CSV Data Analysis Results
-Comprehensive statistical analysis and insights from uploaded CSV files.
+### 📊 CSV Descriptive Results
+
 <div align="center">
-Basic Statistics & Data Overview
-<img src="Result and Example_dataset/Result/descriptive-result-csv1.jpg" 
-  alt="CSV Analysis - Basic Statistics" 
-  width="700" 
-  style="border-radius: 6px; margin: 10px;">
-Data Quality & Distribution Analysis
-<img src="Result and Example_dataset/Result/descriptive-result-csv2.jpg" 
-  alt="CSV Analysis - Data Quality" 
-  width="700" 
-  style="border-radius: 6px; margin: 10px;">
-Advanced Analytics & Insights
-<img src="Result and Example_dataset/Result/descriptive-result-csv3.jpg" 
-  alt="CSV Analysis - Advanced Analytics" 
-  width="700" 
-  style="border-radius: 6px; margin: 10px;">
+
+| | |
+|:---:|:---:|
+| <img src="Result and Example_dataset/Result/descriptive-result-csv1.jpg" alt="CSV Result 1" width="400"> | <img src="Result and Example_dataset/Result/descriptive-result-csv2.jpg" alt="CSV Result 2" width="400"> |
+
 </div>
 
-📄 PDF Document Analysis
-Smart extraction and summarization of PDF content with metadata analysis.
 <div align="center">
-  <img src="Result and Example_dataset/Result/descriptive-result-pdf.png" 
-       alt="PDF Analysis Results" 
-       width="700" 
-       style="border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+  <img src="Result and Example_dataset/Result/descriptive-result-csv3.jpg" 
+       alt="CSV Result 3" 
+       width="450">
 </div>
 
-📁 Upload Interface
-Simple and intuitive file upload experience supporting PDF, CSV, and Excel formats.
+### 📁 Upload Interface
 <div align="center">
   <img src="Result and Example_dataset/Result/upload-data-page.png" 
        alt="Upload Data Interface" 
-       width="700" 
-       style="border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+       width="450">
 </div>
+
 ```
 
 ## ✨ Key Features
